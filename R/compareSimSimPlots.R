@@ -1,6 +1,22 @@
 
 
 
+#' Displace plot
+#'
+#' This function produces a wealth of raw graphics in a output hierarchy of folders to compare scenarios vs. baseline sce
+#'
+#' @param fname First name
+#' @param lname Last name
+#' @export
+#' @examples
+#' compareSimSimPlots(general=general, lst_loglike_agg_1=lst_loglike_agg_1, lst_loglike_agg_2=lst_loglike_agg_2, years_span=2015:2019, ...,
+#'                                   explicit_pops=explicit_pops, plot_obs=TRUE,
+#'                                       idx.sim=list(sce1=c(1), sce2=c(1)), combined_name=c("baseline_vs_implicit"),
+#'                                         a.comment="", what="per_vessel", what2="weight", count=0,
+#'                                          a.xlab="", a.ylab="", a.unit=1, do_mtext=FALSE)
+
+
+
 compareSimSimPlots <- function (lst_loglike_agg_1, lst_loglike_agg_2, years_span=2015:2019, ...,  explicit_pops=explicit_pops, plot_obs=TRUE,
                                        idx.sim=list(sce1=c(1), sce2=c(1)), combined_name=c("baseline_vs_implicit"),
                                          a.comment="", what="per_vessel", what2="weight", count=0,

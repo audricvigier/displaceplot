@@ -1,8 +1,22 @@
 
 
+            
+#' Displace plot 
+#'
+#' This function generates an average layer as a first step to generate maps from popnodes files 
+#'
+#' @param fname First name
+#' @param lname Last name
+#' @export
+#' @examples
+#' getAggNodeLayerFiles(general=general, type="cumcatches", a_tstep="34321")  
 
 
-getAggNodeLayerFiles <- function(general, type="cumcatches"){
+
+
+
+
+getAggNodeLayerFiles <- function(general, a_type="cumcatches", a_tstep="34321"){
 
 
   for (sce in general$namefolderoutput){
@@ -13,19 +27,19 @@ getAggNodeLayerFiles <- function(general, type="cumcatches"){
 
  
     ## catches-------------------------------
-    allcumcatches <- NULL
+    alllayers <- NULL
 
 
      for (sim in general$namesimu[[sce]]){
 
          er <- try(   {
-            cumcatches <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
-                                                paste("popnodes_cumcatches_", sim, ".dat", sep='')))
-            colnames (cumcatches) <- c('tstep', 'idx_node', 'long', 'lat', 'catches')
-            cumcatches    <- cumcatches[cumcatches$tstep=="34321",] # e.g. cumul at 1st of Dec 4th year
-            cumcatches    <- cumcatches[c("idx_node",'lat','long',"catches")]
-            cumcatches    <- cbind(cumcatches, simu=sim)
-            allcumcatches <- rbind(allcumcatches, cumcatches)
+            obj <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
+                                                paste("popnodes_",a_type,"_", sim, ".dat", sep='')))
+            colnames (obj) <- c('tstep', 'idx_node', 'long', 'lat', a_type)
+            obj    <- obj[obj$tstep==a_tstep,] # e.g. if "34321" then cumul at 1st of Dec 4th year
+            obj    <- obj[c("idx_node",'lat','long', a_type)]
+            obj    <- cbind(obj, simu=sim)
+            alllayers <- rbind(alllayers, obj)
          }, silent=TRUE)
 
         if(class(er)=="try-error"){
@@ -37,22 +51,23 @@ getAggNodeLayerFiles <- function(general, type="cumcatches"){
   
      # CAUTION:
      # read graph coord and complete DISPLACE output files with all coords for image() to work properly
-     coord <- read.table(file=file.path(paste(general$main.path.ibm,"_", general$case_study, sep=""), "graphsspe", paste("coord", general$igraph, ".dat", sep=""))) # build from the c++ gui
+     coord <- read.table(file=file.path(paste(general$main.path.ibm,"_", general$case_study, sep=""),
+                          "graphsspe", paste("coord", general$igraph, ".dat", sep=""))) # build from the c++ gui
      coord <- as.matrix(as.vector(coord))
      coord <- matrix(coord, ncol=3)
      colnames(coord) <- c('SI_LONG', 'SI_LATI', 'idx.port')
      # hereafter:
-     allcumcatches <- rbind(allcumcatches, data.frame(idx_node=0, lat=coord[,2], long=coord[,1], catches=NA, simu="simu2")) 
-     
+     alllayers <- rbind(alllayers, data.frame(idx_node=0, lat=coord[,2], long=coord[,1], a_type=NA, simu="simu2")) 
+     colnames(alllayers) [colnames(alllayers)%in%  "a_type"] <- a_type
      
   
 
-    cumcatches_tot <- tapply(as.numeric(as.character(allcumcatches$catches)), list(paste(allcumcatches$idx_node, allcumcatches$lat, allcumcatches$long))
+    alllayersav <- tapply(as.numeric(as.character(alllayers[,a_type])), list(paste(alllayers$idx_node, alllayers$lat, alllayers$long))
                                                               , mean, na.rm=TRUE) # average over simus
-    cumcatches_tot <- cbind.data.frame(node=names(cumcatches_tot), avcumcatches=cumcatches_tot)
+    alllayersav <- cbind.data.frame(node=names(alllayersav), avcum=alllayersav)
 
-    write.table(cumcatches_tot, file=file.path(general$main.path, general$namefolderinput, sce,
-                              paste("average_cumcatches_layer.txt", sep='')), row.names=FALSE, quote=FALSE)
+    write.table(alllayersav, file=file.path(general$main.path, general$namefolderinput, sce,
+                              paste("average_",a_type,"_layer.txt", sep='')), row.names=FALSE, quote=FALSE)
 
    
  

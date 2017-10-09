@@ -1,12 +1,21 @@
 
 
+#' Displace plot
+#'
+#' This function re-load the files produced by getAggLoglikeFiles()
+#'
+#' @param fname First name
+#' @param lname Last name
+#' @export
+#' @examples
+#' boxplotAggLoglikeFilesIndicators(general=general, the_baseline, sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
+
+boxplotAggLoglikeFilesIndicators <- function(general= general,
+                                             the_baseline="svana_baseline",
+                                             sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_")){
 
 
-   selected <- "_selected_set1_"     # all
-   selected <- "_selected_set2_"     # baltic
-   selected <- "_selected_set3_"     # msea+kask
 
-sets <- c("_selected_set1_", "_selected_set2_", "_selected_set3_")
 for (selected in sets){
 
  outcomes <- read.table(file.path(general$main.path, general$namefolderinput,
@@ -16,9 +25,9 @@ for (selected in sets){
  levels (outcomes$scenario) <-  c("svana_sub1mx20",      "svana_sub4mx20",      "svana_sub4mx20ns5bt", "svana_sub4mx5ns20bt", "svana_sub4mx5ns5bt")
 
  # add baseline at 0,0,0, etc.
- baseline <- outcomes[outcomes$scenario == "svana_sub1mx20",]  # init
+ baseline <- outcomes[outcomes$scenario == levels(outcomes$scenario)[1],]  # init
  baseline$ratio_percent <-0
- baseline$scenario <- "svana_baseline"
+ baseline$scenario <- the_baseline
  outcomes <- rbind.data.frame(baseline, outcomes)
  outcomes$scenario <- factor(outcomes$scenario)
 
@@ -57,8 +66,8 @@ for (selected in sets){
                                    units = "px", pointsize = 12,  res=300, compression=c("lzw"))
 
  library(ggplot2)
- outcomes[outcomes$ratio_percent< -25, "ratio_percent"] <- -25
- outcomes[outcomes$ratio_percent>25, "ratio_percent"] <- 25
+ outcomes[outcomes$ratio_percent< -25, "ratio_percent"]  <- -25
+ outcomes[outcomes$ratio_percent>25, "ratio_percent"]    <- 25
  p <- ggplot(outcomes[outcomes$ratio_percent>=-25 & outcomes$ratio_percent<=25,], aes(factor(variable), ratio_percent))  + geom_boxplot(outlier.shape=1)  +
              labs(x = "Indicators", y = "% ratio over the baseline") # + ylim(-20, 20)
  print(
@@ -84,15 +93,23 @@ for (selected in sets){
 
  library(ggplot2)
  p <- ggplot(outcomes, aes(factor(variable), ratio_percent))   + geom_boxplot(outlier.shape=NA)  +
- p   + facet_wrap( ~ scenario, ncol=2, scales="free_y")   + coord_cartesian(ylim = range(boxplot(outcomes$ratio_percent, plot=FALSE)$stats)*c(.9, 1.1)) + theme(axis.text.x = element_text(angle = 90)) + geom_abline(intercept=0, slope=0, color="grey", lty=2)
+ p   + facet_wrap( ~ scenario, ncol=2, scales="free_y")   +
+       coord_cartesian(ylim = range(boxplot(outcomes$ratio_percent, plot=FALSE)$stats)*c(.9, 1.1)) +
+        theme(axis.text.x = element_text(angle = 90)) + geom_abline(intercept=0, slope=0, color="grey", lty=2)
 
  dev.off()
  }
 
  } # end FOR-loop over sets
 
- } # end FALSE
+
+ return()
+ }
 
 
+
+ if(FALSE){
+
+ }
 
 

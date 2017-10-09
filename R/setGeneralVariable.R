@@ -1,7 +1,7 @@
             
 #' Displace plot 
 #'
-#' This function set the general variable useful for relative file path etc. 
+#' This function sets the general variable useful for relative file paths etc. 
 #'
 #' @param fname First name
 #' @param lname Last name

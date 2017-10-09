@@ -1,14 +1,24 @@
 
 
+#' Displace plot
+#'
+#' This function re-load the files produced by getAggLoglikeFiles()
+#'
+#' @param fname First name
+#' @param lname Last name
+#' @export
+#' @examples
+#' expressAggLoglikeFilesIndicatorsRelativeToBaselineSce(general=general, the_baseline, sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
+
 
 expressAggLoglikeFilesIndicatorsRelativeToBaselineSce <- function(general,
-                              a_baseline = "svana_baseline",
+                              the_baseline = "svana_baseline",
                               sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_")) {
 
 
-   selected <- "_selected_set1_"     # all
-   selected <- "_selected_set2_"     # baltic
-   selected <- "_selected_set3_"     # msea+kask
+   selected <- "_selected_set1_"
+   selected <- "_selected_set2_"
+   selected <- "_selected_set3_"
    sets <- c("_selected_set1_", "_selected_set2_", "_selected_set3_")
 
 
@@ -20,18 +30,18 @@ expressAggLoglikeFilesIndicatorsRelativeToBaselineSce <- function(general,
 
 
 what2 <- "weight"
-lst_loglike_w_agg_all_1     <- get(paste("lst_loglike_agg_",what2, selected, a_baseline, sep=''), env=.GlobalEnv)
+lst_loglike_w_agg_all_1     <- get(paste("lst_loglike_agg_",what2, selected, the_baseline, sep=''), env=.GlobalEnv)
     dd                      <- table(unlist(lapply(lst_loglike_w_agg_all_1, nrow)))
     expected_nb_rows        <- as.numeric(names(dd[dd==max(dd)]))[1] # most common number of rows
     idx                     <- unlist(lapply(lst_loglike_w_agg_all_1, function(x) nrow(x)==expected_nb_rows))
     namesimu1               <- names(unlist(lapply(lst_loglike_w_agg_all_1, function(x) nrow(x)==expected_nb_rows)))[idx]
     lst_loglike_w_agg_all_1 <- lst_loglike_w_agg_all_1[namesimu1]
 
-lst_loglike_w_agg_vid_1 <- get(paste("lst_loglike_agg_",what2,"_vid_", a_baseline, sep=''), env=.GlobalEnv)
+lst_loglike_w_agg_vid_1 <- get(paste("lst_loglike_agg_",what2,"_vid_", the_baseline, sep=''), env=.GlobalEnv)
 
 
  #*****************************#
- others_than_baseline        <- general$namefolderoutput[!general$namefolderoutput %in% a_baseline]
+ others_than_baseline        <- general$namefolderoutput[!general$namefolderoutput %in% the_baseline]
  #*****************************#
 
   # quick check at the vessel id level
