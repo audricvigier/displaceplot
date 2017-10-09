@@ -1,0 +1,12 @@
+Package: displaceplot
+Title: A suite of R routine to process DISPLACE simulation output files
+Version: 0.1
+Authors@R: Francois Bastardie fba@aqua.dtu.dk
+Description: DISPLACE simulation generates a lot of text output files
+ that need some post-processing to make the most out of them and plot the data correctly. 
+ However this suite of routines is only a suggestion and the user might think about creating his own set derived
+ from the ones presented here.
+Depends: R (>= 3.4.0)
+License: GPL2
+Encoding: UTF-8
+LazyData: true
