@@ -741,11 +741,12 @@ if(FALSE){
     #=> generate a  wealth of graphs, but also some general output files...
 
 
+   require(plotrix)
    stressBarplot (general=general,
                           the_baseline="svana_baseline",
-                          selected_vessels="selected_vessels_set_1",
+                          selected_vessels=selected_vessels_set_1,
                           by_class=NULL,
-                          a_width=3000, a_height=2000)
+                          a_width=1500, a_height=3500)
 
 
 
