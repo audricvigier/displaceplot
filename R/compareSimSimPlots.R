@@ -469,7 +469,8 @@ compareSimSimPlots <- function (lst_loglike_agg_1, lst_loglike_agg_2, years_span
          write(c(format(Sys.time(), "%H:%M:%S"), combined_name, lstargs$vid,
                       effort_base, effort_sce, gain_effort, gain_seffort,
                       totland_mat1, totland_av_mat1_explicit,
-                      gain_totland, gain_totland_explicit, gain_totland_implicit, gain_av_vpuf, gain_av_vapuf, gain_av_revenue, gain_av_rev_av_prices,
+                      gain_totland, gain_totland_explicit, gain_totland_implicit,
+                      gain_av_vpuf, gain_av_vapuf, gain_av_revenue, gain_av_rev_av_prices,
                        gain_av_gav, gain_av_gradva,
                         gain_fcpue_all, gain_fcpue_explicit, gain_fcpue_implicit,
                         paste("gain_fcpue_pop",explicit_pops, sep=""),
@@ -481,7 +482,8 @@ compareSimSimPlots <- function (lst_loglike_agg_1, lst_loglike_agg_2, years_span
 
         a_df_disc <-  eval(parse(text=paste("cbind.data.frame(",paste("gain_fcpue_pop",explicit_pops,"_per_simu", sep="", collapse=","), ")" )))
 
-        write.table(cbind.data.frame(time=format(Sys.time(), "%H:%M:%S"), combined_name, lstargs$vid, simu=gsub("effort","", names(gain_effort_per_simu)),
+        write.table(cbind.data.frame(time=format(Sys.time(), "%H:%M:%S"), combined_name, lstargs$vid,
+                                     simu=gsub("effort","", names(gain_effort_per_simu)),
                       effort_base, effort_sce, gain_effort_per_simu, gain_seffort_per_simu,
                       totland_mat1, totland_av_mat1_explicit,
                       gain_totland_per_simu, gain_totland_explicit_per_simu, gain_totland_implicit_per_simu,
@@ -523,6 +525,16 @@ if(FALSE){
 
   others_than_baseline  <- general$namefolderoutput[!general$namefolderoutput %in%  general$the_baseline]   ## CAUTION
 
+ if(TRUE) write(c("id","sce","vid", "effort_base", "effort_sce", "gain_effort", "gain_seffort",
+                     "baseline_totland_av",  "baseline_totland_explicit_av","gain_totland","gain_totland_explicit", "gain_totland_implicit",
+                      "gain_av_vpuf","gain_av_vapuf", "gain_av_revenue", "gain_av_rev_av_prices", "gain_av_gav", "gain_av_gradva",
+                      "gain_fcpue_all",  "gain_fcpue_explicit", "gain_fcpue_implicit", paste("gain_fcpue_pop", explicit_pops, sep=""),
+                      "gain_av_trip_duration", "gain_av_traveled_dist", "gain_av_nbtrip"), ncol=24+length(explicit_pops),  ## CAUTION NCOL HERE ##
+                   file=file.path(general$main.path, general$namefolderinput,
+                       paste("vid_indicators_gain_in_totland_and_vpuf_",the_baseline,".txt", sep=''))
+                     append = FALSE, sep = " ") # init
+
+
  if(TRUE) write(c("id","sce","vid", "simu", "effort_base", "effort_sce", "gain_effort", "gain_seffort",
                      "baseline_totland_av",  "baseline_totland_explicit_av","gain_totland","gain_totland_explicit", "gain_totland_implicit",
                       "gain_av_vpuf","gain_av_vapuf", "gain_av_revenue", "gain_av_rev_av_prices", "gain_av_gav", "gain_av_gradva",  "gain_fuelcost",
@@ -531,8 +543,6 @@ if(FALSE){
                    file=file.path(general$main.path, general$namefolderinput,
                      paste("vid_indicators_gain_in_totland_and_vpuf_",the_baseline,"_per_simu.txt", sep='')),
                      append = FALSE, sep = " ") # init
-
-
 
 
 
@@ -694,7 +704,7 @@ if(FALSE){
 
   # an example of workflow
 
-  setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+  general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                        case_study="DanishFleet",
                                        igraph=41,
                                        a.year="2015",

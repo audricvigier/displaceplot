@@ -29,7 +29,7 @@ setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLA
                                        ){
 
  # GENERAL SETTINGS
-  general <<- list()
+  general <- list()
 
   general$case_study <- case_study
 
@@ -70,10 +70,22 @@ setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLA
  
 
 
-   }
+   
 
 return(general)
 } 
 
+
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+
+if(FALSE){
+
+                    general <- setGeneralOverallVariable()
+
+}
 
 

@@ -1,14 +1,24 @@
 
 
-## ---------------------------------------------------------------------------------##
-## ---------------------------------------------------------------------------------##
-##   DO A BARPLOT   ----------------------------------------------------------------##
-## ---------------------------------------------------------------------------------##
-## ---------------------------------------------------------------------------------##
+#' Displace plot
+#'
+#' This function produces barplots of %  of vessel affected per bin for various indicators facing baseline sce
+#'
+#' @param fname First name
+#' @param lname Last name
+#' @export
+#' @examples
+#'stressBarplot (general=general,
+#'                          the_baseline="svana_baseline",
+#'                          selected_vessels="selected_vessels_set_1",
+#'                          by_class=NULL,
+#'                          a_width=3000, a_height=2000)
 
 
 
-do_stress_plot <- function (indic, a_xlab, a_ylab, general, a_min=-1.4, a_max=1.4, a_by=0.2, a_mfrow=c(3,4), the_dim=c(3000, 2000)){
+
+
+do_stress_plot <- function (indic, a_xlab, a_ylab, general, a_min=-1.4, a_max=1.4, a_by=0.2, a_mfrow=c(3,4), the_dim=c(3000, 2000), sces=sces){
 
    namefile       <- paste(paste("stress_barplot_",indic, sep=""))
    output.folder  <- file.path(general$main.path, general$namefolderinput)
@@ -62,7 +72,7 @@ return()
 
 ## ---------------------------------------------------------------------------------##
 do_stress_plot_with_classes <- function (indic, by_class="gear", a_xlab, a_ylab, general, a_min=-1.4, a_max=1.4, a_by=0.2,
-                                         a_mfrow=c(3,4), the_dim=c(3000, 2000), add_legend=TRUE){
+                                         a_mfrow=c(3,4), the_dim=c(3000, 2000), add_legend=TRUE, sces=sces){
 
 
  namefile       <- paste(paste("stress_barplot_per_",by_class,"_",indic, sep=""))
@@ -132,7 +142,7 @@ return()
 
 stressBarplot <- function(general=general,
                           the_baseline="svana_baseline",
-                          selected_vessels="selected_vessels_set_1",
+                          selected_vessels=selected_vessels_set_1,
                           by_class=NULL,
                           a_width=3000, a_height=2000){
 
@@ -141,7 +151,7 @@ stressBarplot <- function(general=general,
    load( file=file.path(general$main.path, general$namefolderinput,
                      paste("selected_vessels.RData", sep='')) )
    ind <- read.table(file=file.path(general$main.path, general$namefolderinput,
-                     paste("vid_indicators_gain_in_totland_and_vpuf_", general$the_baseline,".txt", sep="")),
+                     paste("vid_indicators_gain_in_totland_and_vpuf_", the_baseline,".txt", sep="")),
                       header=TRUE, sep = " ")
                       # IF SMALL BUG WHEN READING?: just need to put headers on the same line first...   (do the correction in notepad++ in case processed by linux)
    ind <- ind[ind$vid %in% selected_vessels,]
@@ -151,38 +161,38 @@ stressBarplot <- function(general=general,
    an <- function(x) as.numeric(as.character(x))
    the_dim        <- c(a_width, a_height)
    sces <- unique(ind$sce)
-   sces <- general$namefolderinput
+   #sces <- general$namefolderoutput
 
 
  ## CALLS-------
  indic    <- "gain_av_gradva"
  a_xlab   <- "log(GVA/baseline GVA)"
  a_ylab   <- "log(GVA/baseline GVA)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
  indic <- "gain_av_vapuf"
  a_ylab  <- "log(VPUF/baseline VPUF)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
  indic <- "gain_totland"
  a_ylab  <- "log(total landings/baseline landings)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
  indic <- "gain_av_trip_duration"
  a_ylab  <- "log(average trip duration/baseline duration)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
  indic <- "gain_av_traveled_dist"
  a_ylab  <- "log(average traveled distance/baseline distance)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
  indic <- "gain_av_nbtrip"
  a_ylab  <- "log(average number of trips/baseline number)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
  indic <- "gain_fcpue_explicit"
  a_ylab  <- "log(average gain in CPUEs/baseline number)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim, sces=sces)
 
 
 
@@ -197,36 +207,105 @@ stressBarplot <- function(general=general,
 
   indic <- "gain_av_gradva"
   a_ylab  <- "log(GVA/baseline GVA)"
-  do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+  do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
   indic <- "gain_av_vapuf"
   a_ylab  <- "log(VPUF/baseline VPUF)"
-  do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+  do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
  indic <- "gain_totland"
  a_ylab  <- "log(total landings/baseline landings)"
- do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
  indic <- "gain_av_trip_duration"
  a_ylab  <- "log(average trip duration/baseline duration)"
- do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
  indic <- "gain_av_traveled_dist"
  a_ylab  <- "log(average traveled distance/baseline distance)"
- do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
  indic <- "gain_av_nbtrip"
  a_ylab  <- "log(average number of trips/baseline number)"
- do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
  indic <- "gain_fcpue_explicit"
  a_ylab  <- "log(average gain in CPUEs/baseline number)"
- do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000), sces=sces)
 
-
+  } # end class
 
  return()
 }
+
+
+
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!SCRIPT CALLS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+
+
+if(FALSE){
+
+  # example of use
+
+
+  general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
+                                       case_study="DanishFleet",
+                                       igraph=41,
+                                       a.year="2015",
+                                       a.country="DEN",
+                                       nbpops=39,
+                                       nbszgroup=14,
+                                       namefolderinput="DanishFleet",
+                                       the_scenarios= c("svana_baseline",
+                                                       "svana_sub1mx20",
+                                                       "svana_sub4mx20",
+                                                       "svana_sub4mx5ns20bt",
+                                                       "svana_sub4mx20ns5bt",
+                                                       "svana_sub4mx5ns5bt" ),
+                                       nbsimus=20
+                                       )
+
+   selected_vessels_set_1 <- as.character(read.table(file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_1.dat",sep='')), header=FALSE)[,1])
+
+
+  # CAUTION: this following process can take a while!
+  compareSimSimPlots(general=general, lst_loglike_agg_1=lst_loglike_agg_1, lst_loglike_agg_2=lst_loglike_agg_2, years_span=2015:2019, ...,
+                                   explicit_pops=explicit_pops, plot_obs=TRUE,
+                                       idx.sim=list(sce1=c(1), sce2=c(1)), combined_name=c("baseline_vs_implicit"),
+                                         a.comment="", what="per_vessel", what2="weight", count=0,
+                                          a.xlab="", a.ylab="", a.unit=1, do_mtext=FALSE)
+
+
+   require(plotrix)
+   stressBarplot (general=general,
+                          the_baseline="svana_baseline",
+                          selected_vessels=selected_vessels_set_1,
+                          by_class=NULL,
+                          a_width=1500, a_height=3500)
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

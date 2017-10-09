@@ -120,7 +120,7 @@ for (selected in sets){
 
    # an example of worflow
 
-   setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+   general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                        case_study="DanishFleet",
                                        igraph=41,
                                        a.year="2015",
