@@ -16,7 +16,7 @@
 #'                                       gis_shape=list(
 #'                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
 #'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
-#'                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60)
+#'                                           a_width= 3200, a_height =2100, xlims =  c(7, 16), ylims = c(53.5,59)
 #'                                        )
 
 
@@ -112,6 +112,7 @@
 
 comparePieplotStressPerPort <- function(general,
                                        nbsim=20,
+                                       the_baseline="svana_baseline",
                                        a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
                                                                                    y=c(46.47831, 52.22793, 63.08831, 62.44946)),
                                        selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
@@ -125,9 +126,9 @@ comparePieplotStressPerPort <- function(general,
    
   these_ports <- NULL
   what <- "weight"
-  loglike_baseline <- get( paste("lst_loglike_agg_",what,"_vid_port_", "svana_baseline" , sep=''), env=.GlobalEnv)
+  loglike_baseline <- get( paste("lst_loglike_agg_",what,"_vid_port_", the_baseline , sep=''), env=.GlobalEnv)
   
-  for(sce in general$namefolderoutput[!general$namefolderoutput %in% c("svana_baseline")]) {
+  for(sce in general$namefolderoutput[!general$namefolderoutput %in% c(the_baseline)]) {
 
 
   for(sim in 1:nbsim) {
@@ -152,7 +153,7 @@ comparePieplotStressPerPort <- function(general,
 
 
   
-  these_ports <- these_ports[these_ports$sce %in%a_selected_scenario,]
+  these_ports <- these_ports[these_ports$sce %in% selected_scenarios,]
   these_ports$sce <- factor(these_ports$sce)
 
   colnames(these_ports) <- c( "sce", "sim", "port", "vid", "ref", "sce", "percent_change", "totrevenue")
@@ -342,13 +343,14 @@ if(FALSE){
 
  comparePieplotStressPerPort (general,
                                        nbsim=20,
+                                       the_baseline="svana_baseline",
                                        a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
                                                                                    y=c(46.47831, 52.22793, 63.08831, 62.44946)),
                                        selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
                                        gis_shape=list(
                                            svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
                                            svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
-                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60)
+                                           a_width= 3200, a_height =2100, xlims =  c(7, 16), ylims = c(53.5,59)
                                            ) 
 
 }  # end FALSE
