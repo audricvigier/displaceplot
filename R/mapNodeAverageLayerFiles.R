@@ -24,6 +24,7 @@ mapNodeAverageLayerFiles <- function(general, a_type="cumcatches",  the_baseline
                             selected_scenarios_for_plot=general$namefolderoutputs,
                             selected_scenarios_for_table=general$namefolderoutputs,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
+                            the_break_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.2))), 1000000),
                             gis_shape=list(),
                             a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17
                             ){
@@ -73,20 +74,23 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
 
-    namefile  <- file.path(general$main.path, general$namefolderinput, paste("map_averaged_",a_type,"_selected.tiff") )
-    namefile2 <- file.path(general$main.path, general$namefolderinput, paste("table_",a_type,".txt") )
+    namefile  <- file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",a_type,"_selected.tiff") )
+    namefile2 <- file.path(general$main.path, general$namefolderinput, paste0("table_",a_type,".txt") )
 
 
     tiff(filename=namefile,   width = a_width, height = a_height,
                                    units = "px", pointsize = 12,  res=300, compression = c("lzw"))
 
+    if(length(selected_scenarios_for_plot)==3) m <- rbind(c(1, 1), c(1, 1),c(2, 3))
+    if(length(selected_scenarios_for_plot)==5) m <- rbind(c(1, 1), c(1, 1),c(2, 3), c(4, 5))
     if(length(selected_scenarios_for_plot)==7) m <- rbind(c(1, 1), c(1, 1),c(2, 3), c(4, 5),  c(6, 7))
     if(length(selected_scenarios_for_plot)==2) m <- rbind(c(1, 2))
+    if(length(selected_scenarios_for_plot)==4) m <- rbind(c(1, 2), c(2,3))
     if(length(selected_scenarios_for_plot)==6) m <- rbind(c(1, 2) ,c(3, 4), c(5, 6))
     layout(m)
     par(mar=c(2,2,3,1))
     par(oma=c(4,4,1,1))
-    table_obj <- NULL
+    #table_obj <- NULL
 
 
    for(sce in   selected_scenarios_for_table)
@@ -101,7 +105,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     this_for_gis <- this
     this_for_gis[,4] <- ceiling(this_for_gis[,4]) # because weird bug when importing XY data in GIS if not an integer!!!
     write.table(this_for_gis, file=file.path(general$main.path, general$namefolderinput, sce,
-                              paste("average_",a_type,"_layer_",names_sce,".txt", sep='')), col.names=TRUE, row.names=FALSE)
+                              paste("average_",a_type,"_layer_",sce,".txt", sep='')), col.names=TRUE, row.names=FALSE)
 
 
      # get an idea per area
@@ -121,12 +125,18 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      this$round_long <- round(this$long*xcell)  # 15
      this$round_lat  <- round(this$lat*ycell)   # 20
 
-     xcellkm <- vmstools::distance(the_baseline_layer$round_long[1],mean(the_baseline_layer$round_lat), the_baseline_layer$round_long[2],mean(the_baseline_layer$round_lat))
-     ycellkm <- vmstools::distance(mean(the_baseline_layer$round_long), the_baseline_layer$round_lat[1], mean(the_baseline_layer$round_long), the_baseline_layer$round_lat[1])
-     this[,a_type]  <- round(this[,a_type])  /xcellkm * ycellkm # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
+     # find out the grid res
+     lo <- sort(this$round_long, decreasing=TRUE)
+     la <- sort(this$round_lat, decreasing=TRUE)
+     most_freq_in_long <- as.numeric(names(sort(table(diff(lo/xcell)), decreasing=TRUE)[2]))
+     most_freq_in_lat  <- as.numeric(names(sort(table(diff(la/ycell)), decreasing=TRUE)[2]))
+     xcellkm <- vmstools::distance(this$round_long[1]/xcell, mean(this$round_lat)/ycell, (this$round_long[1]/xcell) + most_freq_in_long, mean(this$round_lat)/ycell)
+     ycellkm <- vmstools::distance(mean(this$round_long)/xcell, this$round_lat[2]/ycell , mean(this$round_long)/xcell, (this$round_lat[2]/ycell) + most_freq_in_lat)
+
+     this[,a_type]  <- round(this[,a_type])  /(xcellkm * ycellkm) # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
 
      this$cell_id <-  paste(this$round_long, this$round_lat, sep="_")
-     if(sce == "svana_baseline") {
+     if(sce == the_baseline) {
         the_baseline_layer <- this
         the_baseline_layer <- aggregate(the_baseline_layer[,a_type],
                                 list(the_baseline_layer$round_long, the_baseline_layer$round_lat, the_baseline_layer$cell_id), sum, na.rm=TRUE)
@@ -134,7 +144,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
        Satellite.Palette.baseline <-colorRampPalette(c("cyan","aquamarine","orange","red"))
-       the_breaks_baseline <-   c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000)
+       #the_breaks_baseline <-   c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000)
 
        the_points <- tapply(the_baseline_layer[,a_type],
                   list(the_baseline_layer$round_lat, the_baseline_layer$round_long), sum, na.rm=TRUE)
@@ -154,7 +164,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
         xlim=xlims, ylim=ylims    # balticonly
         )
        library(maps)
-       if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][i], add=TRUE, col=grey(0.8), border=FALSE)
+       if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
        #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
 
 
@@ -227,7 +237,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      xlim=xlims, ylim=ylims
      )
     library(maps)
-     if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][i], add=TRUE, col=grey(0.8), border=FALSE)
+     if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
     #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
 
 
@@ -247,7 +257,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      cex=1.0, col="black")
 
     # add closure polygons:
-     if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[sce]])) plot(gis_shape[[sce]][i], add=TRUE,  border=grey(0.2), col=NA)
+     if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[sce]])) plot(gis_shape[[sce]][[i]], add=TRUE,  border=grey(0.2), col=NA)
 
 
 
@@ -260,6 +270,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
   mtext(side=2,"Longitude",line=2, cex=1.5, outer=TRUE)
 
 dev.off()
+
 
 table_obj <- cbind(table_obj, Total= apply(table_obj, 1, sum, na.rm=TRUE) ) # marginal value
 
@@ -281,7 +292,11 @@ write.table(table_obj_relative_to_baseline, "clipboard", sep="\t", row.names=TRU
 
 
 
-
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!SCRIPT CALLS!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
 
 
 if(FALSE){
@@ -306,6 +321,7 @@ if(FALSE){
                                        )
 
 
+   # caution: could take a  while...
    getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
 
 
@@ -332,12 +348,13 @@ if(FALSE){
                             selected_scenarios_for_plot=general$namefolderoutput,
                             selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
-                            gis_shape=list(svana_baseline=   c(sh_coastlines, ices_areas),
-                                           svana_sub1mx20=   c(NSsub1mx20, BSsub1mx20),
-                                           svana_sub4mx20=   c(NSsub4mx20, BSsub4mx20),
-                                           svana_sub4mx5ns20bt=   c(NSsub4mx5, BSsub4mx20),
-                                           svana_sub4mx20ns5bt=   c(NSsub4mx20, BSsub4mx5),
-                                           svana_sub4mx5ns5bt=    c(NSsub4mx5, BSsub4mx5),
+                            the_break_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000),
+                            gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
+                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
+                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
+                                           svana_sub4mx5ns20bt=   list(NSsub4mx5, BSsub4mx20),
+                                           svana_sub4mx20ns5bt=   list(NSsub4mx20, BSsub4mx5),
+                                           svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5),
                                            a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17
                                            ))
 
