@@ -531,7 +531,7 @@ if(FALSE){
                       "gain_fcpue_all",  "gain_fcpue_explicit", "gain_fcpue_implicit", paste("gain_fcpue_pop", explicit_pops, sep=""),
                       "gain_av_trip_duration", "gain_av_traveled_dist", "gain_av_nbtrip"), ncol=24+length(explicit_pops),  ## CAUTION NCOL HERE ##
                    file=file.path(general$main.path, general$namefolderinput,
-                       paste("vid_indicators_gain_in_totland_and_vpuf_",the_baseline,".txt", sep=''))
+                       paste("vid_indicators_gain_in_totland_and_vpuf_",the_baseline,".txt", sep='')),
                      append = FALSE, sep = " ") # init
 
 

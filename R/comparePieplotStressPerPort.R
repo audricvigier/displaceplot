@@ -204,6 +204,7 @@ comparePieplotStressPerPort <- function(general,
  library(scales)
  box()
  
+        if (!is.null(gis_shape)) if(length(gis_shape[[selected_scenarios[1]]])>0) for (i in 1:length(gis_shape[[selected_scenarios[1]]])) plot(gis_shape[[selected_scenarios[1]]][[i]], add=TRUE, fill=FALSE, border=grey(0.8))
  
  maxrev <- max(these_ports$totrevenue)  
  
@@ -235,7 +236,6 @@ comparePieplotStressPerPort <- function(general,
   box()
   mtext(side=3, adj=0, text=selected_scenarios[1], line=1)
 
-        if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[selected_scenarios[1]]])) plot(gis_shape[[selected_scenarios[1]]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
  
  
  
@@ -259,7 +259,8 @@ comparePieplotStressPerPort <- function(general,
  mtext(side=2, text="Latitude", line=2.7)
 
 
-
+  if (!is.null(gis_shape)) if(length(gis_shape[[selected_scenarios[2]]])>0) for (i in 1:length(gis_shape[[selected_scenarios[2]]])) plot(gis_shape[[selected_scenarios[2]]][[i]], add=TRUE,fill=FALSE, border=grey(0.8))
+ 
 
  dd <-  these_ports[these_ports$sce==selected_scenarios[2],]  
  
@@ -283,7 +284,6 @@ comparePieplotStressPerPort <- function(general,
   box()
   mtext(side=3, adj=0, text=selected_scenarios[2], line=1)
   
-  if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[selected_scenarios[2]]])) plot(gis_shape[[selected_scenarios[2]]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
  
 
 
