@@ -154,9 +154,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
         xlim=xlims, ylim=ylims    # balticonly
         )
        library(maps)
-     if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][i], add=TRUE, col=grey(0.8), border=FALSE)
-       plot(ices_areas, add=TRUE,  border=grey(0.8))
-       text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
+       if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][i], add=TRUE, col=grey(0.8), border=FALSE)
+       #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
 
 
        box()
@@ -229,8 +228,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      )
     library(maps)
      if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][i], add=TRUE, col=grey(0.8), border=FALSE)
-    plot(ices_areas, add=TRUE,  border=grey(0.8))
-    text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
+    #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
 
 
     box()
@@ -288,7 +286,30 @@ write.table(table_obj_relative_to_baseline, "clipboard", sep="\t", row.names=TRU
 
 if(FALSE){
 
+   # an example of workflow:
 
+   setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+                                       case_study="DanishFleet",
+                                       igraph=41,
+                                       a.year="2015",
+                                       a.country="DEN",
+                                       nbpops=39,
+                                       nbszgroup=14,
+                                       namefolderinput="DanishFleet",
+                                       the_scenarios= c("svana_baseline",
+                                                       "svana_sub1mx20",
+                                                       "svana_sub4mx20",
+                                                       "svana_sub4mx5ns20bt",
+                                                       "svana_sub4mx20ns5bt",
+                                                       "svana_sub4mx5ns5bt" ),
+                                       nbsimus=20
+                                       )
+
+
+   getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
+
+
+   library(maptools)
    sh_coastlines               <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub','DISPLACE_input_myfish','graphsspe', 'shp', 'francois_EU'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
    ices_areas                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub','DISPLACE_input_raw','ices_areas','ices_areas'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
 
@@ -300,18 +321,18 @@ if(FALSE){
                                                        'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub4_mx_20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
    BSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
                                                          'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub4_Mx_20LongTailedD_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
-   NSsub4mx5                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
+   NSsub4mx5                   <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
                                                           'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub4_mx05_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
-   BSsub4mx5                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
+   BSsub4mx5                   <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
                                                            'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub4_Mx_5LgtailedD_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
 
 
 
-mapNodeAverageLayerFiles (general, a_type="cumcatches",   the_baseline= "svana_baseline",
-                            selected_scenarios_for_plot=general$namefolderoutputs,
-                            selected_scenarios_for_table=general$namefolderoutputs,
+   mapNodeAverageLayerFiles (general, a_type="cumcatches",   the_baseline= "svana_baseline",
+                            selected_scenarios_for_plot=general$namefolderoutput,
+                            selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
-                            gis_shape=list(svana_baseline=   c(sh_coastlines),
+                            gis_shape=list(svana_baseline=   c(sh_coastlines, ices_areas),
                                            svana_sub1mx20=   c(NSsub1mx20, BSsub1mx20),
                                            svana_sub4mx20=   c(NSsub4mx20, BSsub4mx20),
                                            svana_sub4mx5ns20bt=   c(NSsub4mx5, BSsub4mx20),

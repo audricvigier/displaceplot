@@ -61,14 +61,14 @@ return()
 
 
 ## ---------------------------------------------------------------------------------##
-do_stress_plot_with_classes <- function (indic, classes="gear", a_xlab, a_ylab, general, a_min=-1.4, a_max=1.4, a_by=0.2,
+do_stress_plot_with_classes <- function (indic, by_class="gear", a_xlab, a_ylab, general, a_min=-1.4, a_max=1.4, a_by=0.2,
                                          a_mfrow=c(3,4), the_dim=c(3000, 2000), add_legend=TRUE){
 
 
- namefile       <- paste(paste("stress_barplot_per_",classes,"_",indic, sep=""))
+ namefile       <- paste(paste("stress_barplot_per_",by_class,"_",indic, sep=""))
  output.folder  <- file.path(general$main.path, general$namefolderinput)
 
- tiff(filename=file.path(output.folder, paste(namefile, "_", classes, ".tiff", sep="" )),
+ tiff(filename=file.path(output.folder, paste(namefile, "_", by_class, ".tiff", sep="" )),
                                    width = 1200, height = 3500,
                                    units = "px", pointsize = 12,  res=300,  compression = c("lzw") )
 
@@ -85,12 +85,12 @@ do_stress_plot_with_classes <- function (indic, classes="gear", a_xlab, a_ylab, 
      dat[dat< a_min] <- a_min  +0.1
     dat[dat> a_max] <-  a_max   -0.1
      dat    <- cut(dat, breaks=round(seq(a_min,a_max,by=a_by),2))
-    the_classes  <- ind[ind$sce==sce, classes]
+    the_classes  <- ind[ind$sce==sce, by_class]
 
     nbc <- floor(length( seq(a_min,a_max,by=a_by))/2)
-     if(length( seq(a_min,a_max,by=a_by)) != nbc*2)  middle <-  rep(the_colors[1:length(classes)], 1)  else middle <- NULL
+     if(length( seq(a_min,a_max,by=a_by)) != nbc*2)  middle <-  rep(the_colors[1:length(by_class)], 1)  else middle <- NULL
 
-    nbcl <- length(unique(ind[,classes]))
+    nbcl <- length(unique(ind[,by_class]))
 
      percent <- sweep(table(dat, the_classes), 2, sum(apply(table(dat, the_classes), 2, sum)), FUN="/")  *100
        percent[apply(percent,1, sum)>45, ] <- percent[apply(percent,1, sum)>45, ] * 45/apply(percent,1, sum)[apply(percent,1, sum)>45]
@@ -130,59 +130,63 @@ return()
 ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
 ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
 
-if(FALSE){
+stressBarplot <- function(general=general,
+                          the_baseline="svana_baseline",
+                          selected_vessels="selected_vessels_set_1",
+                          by_class=NULL,
+                          a_width=3000, a_height=2000){
 
-general$the_baseline <- "svana_baseline"
 
 
-load( file=file.path(general$main.path, general$namefolderinput,
+   load( file=file.path(general$main.path, general$namefolderinput,
                      paste("selected_vessels.RData", sep='')) )
-ind <- read.table(file=file.path(general$main.path, general$namefolderinput,
+   ind <- read.table(file=file.path(general$main.path, general$namefolderinput,
                      paste("vid_indicators_gain_in_totland_and_vpuf_", general$the_baseline,".txt", sep="")),
                       header=TRUE, sep = " ")
                       # IF SMALL BUG WHEN READING?: just need to put headers on the same line first...   (do the correction in notepad++ in case processed by linux)
-ind <- ind[ind$vid %in% selected_vessels_set_1,]
-levels(ind$sce) <-  c( "excludeIn6nmSoleSanctuaryAndPomoPit", "excludeInBuffer4nm" ,    "excludeInBuffer6nm",     "excludeInPomoPitBan",    "excludeInSoleSanctuary"
-                         )
-ind$sce         <- factor(as.character(ind$sce)) # get the alphabetical order
-an <- function(x) as.numeric(as.character(x))
-the_dim        <- c(3000, 2000)
-sces <- unique(ind$sce)
-sces <-c("excludeInBuffer4nm" ,    "excludeInBuffer6nm",     "excludeInPomoPitBan",    "excludeInSoleSanctuary", "excludeIn6nmSoleSanctuaryAndPomoPit"  )
+   ind <- ind[ind$vid %in% selected_vessels,]
+   #levels(ind$sce) <-  c( "excludeIn6nmSoleSanctuaryAndPomoPit", "excludeInBuffer4nm" ,    "excludeInBuffer6nm",     "excludeInPomoPitBan",    "excludeInSoleSanctuary"
+   #                      )
+   ind$sce         <- factor(as.character(ind$sce)) # get the alphabetical order
+   an <- function(x) as.numeric(as.character(x))
+   the_dim        <- c(a_width, a_height)
+   sces <- unique(ind$sce)
+   sces <- general$namefolderinput
 
 
  ## CALLS-------
  indic    <- "gain_av_gradva"
  a_xlab   <- "log(GVA/baseline GVA)"
  a_ylab   <- "log(GVA/baseline GVA)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
  indic <- "gain_av_vapuf"
  a_ylab  <- "log(VPUF/baseline VPUF)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
  indic <- "gain_totland"
  a_ylab  <- "log(total landings/baseline landings)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
  indic <- "gain_av_trip_duration"
  a_ylab  <- "log(average trip duration/baseline duration)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
  indic <- "gain_av_traveled_dist"
  a_ylab  <- "log(average traveled distance/baseline distance)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
  indic <- "gain_av_nbtrip"
  a_ylab  <- "log(average number of trips/baseline number)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
  indic <- "gain_fcpue_explicit"
  a_ylab  <- "log(average gain in CPUEs/baseline number)"
- do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot (indic, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=the_dim)
 
 
 
+ if(length(by_class)!=0){
 
   ## calls----------------
   ind$gear            <- NA
@@ -193,35 +197,36 @@ sces <-c("excludeInBuffer4nm" ,    "excludeInBuffer6nm",     "excludeInPomoPitBa
 
   indic <- "gain_av_gradva"
   a_ylab  <- "log(GVA/baseline GVA)"
-  do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+  do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
   indic <- "gain_av_vapuf"
   a_ylab  <- "log(VPUF/baseline VPUF)"
-  do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+  do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
  indic <- "gain_totland"
  a_ylab  <- "log(total landings/baseline landings)"
- do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
  indic <- "gain_av_trip_duration"
  a_ylab  <- "log(average trip duration/baseline duration)"
- do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
  indic <- "gain_av_traveled_dist"
  a_ylab  <- "log(average traveled distance/baseline distance)"
- do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
  indic <- "gain_av_nbtrip"
  a_ylab  <- "log(average number of trips/baseline number)"
- do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
  indic <- "gain_fcpue_explicit"
  a_ylab  <- "log(average gain in CPUEs/baseline number)"
- do_stress_plot_with_classes (indic, classes="gear", a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
+ do_stress_plot_with_classes (indic, by_class=by_class, a_xlab, a_ylab, general, a_min=-0.5, a_max=0.5, a_by=0.1, a_mfrow=c(5,1), the_dim=c(1000, 3000))
 
 
 
-  } # end FALSE
+ return()
+}
 
 
 

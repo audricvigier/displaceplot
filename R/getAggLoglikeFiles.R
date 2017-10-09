@@ -214,7 +214,7 @@ loadCoord <- function(){
  ##!!!!!!!!!!!!!!LOGLIKE.DAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- do_aggregration_of_loglike_files <- function(general=general, 
+ aggregratLoglikeFiles <- function(general=general, 
                                               what="weight", 
                                               explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
                                               implicit_pops=c(0,1,2,4,5,6,8,9,11:30),
@@ -643,77 +643,94 @@ return()
 }
 
 
+
+
+
  ## SCRIPT CALL ##
 
-#if(general$namefolderinput=="DanishFleet"){
-# 
-#  # subset for the baltic cod fisheries
-#   #...if we start from eflalo
-# if(FALSE){
-# 
-#   
-# 
-#  load(file.path(general$main.path.param, "FISHERIES",
-#           paste("logbooks_DNK_","2015",".RData",sep=''))) 
-#  eflalo                           <- cbind.data.frame (logbooks, totland=apply(logbooks[, grep("LE_KG", colnames(logbooks))],  1, sum, na.rm=TRUE )  )
-#  eflalo                           <- cbind(eflalo, ICESrectangle2LonLat(eflalo$LE_RECT))
-#  eflalo$area                      <- ICESarea2 (eflalo[, c("SI_LONG", "SI_LATI")])
-#  bottomfishingmets                <- as.character(unique(eflalo$LE_MET)[ unique(
-#                                             c(grep("OTB", unique(eflalo$LE_MET)),
-#                                               grep("PTB", unique(eflalo$LE_MET)),
-#                                               grep("SDN", unique(eflalo$LE_MET)),
-#                                               grep("PS", unique(eflalo$LE_MET)),
-#                                               grep("SSC", unique(eflalo$LE_MET)),
-#                                               grep("TBB", unique(eflalo$LE_MET)),
-#                                               grep("DRB", unique(eflalo$LE_MET))
-#                                                 )
-#                                            )])  
-#                                            
-#  vids_all                         <- unique(eflalo[, "VE_REF"])
-#  vids_bottomfishing_baltic        <- unique(eflalo[eflalo$area %in% c("2224", "2532") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
-#  vids_bottomfishing_nseakask      <- unique(eflalo[eflalo$area %in% c("nsea", "kask") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
-#  
-#  selected_vessels_set_1  <-  as.character(unique(vids_all[ vids_all %in%  loglike$VE_REF ]))  
-#  selected_vessels_set_2  <-  as.character(unique(vids_bottomfishing_baltic[ vids_bottomfishing_baltic %in%  vids_bottomfishing_baltic ]))  
-#  selected_vessels_set_3  <-  as.character(unique(vids_bottomfishing_nseakask[ vids_bottomfishing_nseakask %in%  vids_bottomfishing_nseakask ]))   
-#  selected_vessels_set_1  <- selected_vessels_set_1[!is.na(selected_vessels_set_1)]
-#  selected_vessels_set_2  <- selected_vessels_set_2[!is.na(selected_vessels_set_2)]
-#  selected_vessels_set_3  <- selected_vessels_set_3[!is.na(selected_vessels_set_3)]
-# 
-#  write.table(selected_vessels_set_1, file.path(general$main.path, general$case_study,
-#           paste("selected_vessels_set_1.dat",sep='')), col.names=FALSE, row.names=FALSE)
-#  write.table(selected_vessels_set_2, file.path(general$main.path, general$case_study,
-#           paste("selected_vessels_set_2.dat",sep='')), col.names=FALSE, row.names=FALSE)
-#  write.table(selected_vessels_set_3, file.path(general$main.path, general$case_study,
-#           paste("selected_vessels_set_3.dat",sep='')), col.names=FALSE, row.names=FALSE)
-#  } else{
-#   selected_vessels_set_1 <- as.character(read.table(file.path(general$main.path, general$case_study,
-#           paste("selected_vessels_set_1.dat",sep='')), header=FALSE)[,1])
-#   selected_vessels_set_2 <-as.character(read.table(file.path(general$main.path, general$case_study,
-#           paste("selected_vessels_set_2.dat",sep='')), header=FALSE)[,1])
-#    selected_vessels_set_3 <- as.character(read.table(file.path(general$main.path, general$case_study,
-#           paste("selected_vessels_set_3.dat",sep='')), header=FALSE)[,1])
-#   
-#  
-#  }
-#  
-#  
-#  save(selected_vessels_set_1, selected_vessels_set_2, selected_vessels_set_3,
-#    file=file.path(general$main.path, general$namefolderinput, 
-#                     paste("selected_vessels.RData", sep='')) )
-#  
-#
-# 
-#
-#if(TRUE) do_aggregration_of_loglike_files(general=general, what="weight",
-#             explicit_pops=explicit_pops2,
-#             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
-#             selected_vessels_set1=selected_vessels_set_1,
-#             selected_vessels_set2=selected_vessels_set_2,
-#             selected_vessels_set3=selected_vessels_set_3)  
-#
-#
-#} # end DanishFleet  
 
+if(FALSE){
+ 
+  # an example of workflow
+      
+  setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+                                       case_study="DanishFleet",
+                                       igraph=41,
+                                       a.year="2015",
+                                       a.country="DEN",
+                                       nbpops=39,
+                                       nbszgroup=14,
+                                       namefolderinput="DanishFleet",
+                                       the_scenarios= c("svana_baseline", 
+                                                       "svana_sub1mx20", 
+                                                       "svana_sub4mx20", 
+                                                       "svana_sub4mx5ns20bt", 
+                                                       "svana_sub4mx20ns5bt", 
+                                                       "svana_sub4mx5ns5bt" ),
+                                       nbsimus=20
+                                       )
+
+
+  load(file.path(general$main.path.param, "FISHERIES",
+           paste("logbooks_DNK_","2015",".RData",sep=''))) 
+  eflalo                           <- cbind.data.frame (logbooks, totland=apply(logbooks[, grep("LE_KG", colnames(logbooks))],  1, sum, na.rm=TRUE )  )
+  eflalo                           <- cbind(eflalo, ICESrectangle2LonLat(eflalo$LE_RECT))
+  eflalo$area                      <- ICESarea2 (eflalo[, c("SI_LONG", "SI_LATI")])
+  bottomfishingmets                <- as.character(unique(eflalo$LE_MET)[ unique(
+                                             c(grep("OTB", unique(eflalo$LE_MET)),
+                                               grep("PTB", unique(eflalo$LE_MET)),
+                                               grep("SDN", unique(eflalo$LE_MET)),
+                                               grep("PS", unique(eflalo$LE_MET)),
+                                               grep("SSC", unique(eflalo$LE_MET)),
+                                               grep("TBB", unique(eflalo$LE_MET)),
+                                               grep("DRB", unique(eflalo$LE_MET))
+                                                 )
+                                            )])  
+                                            
+  vids_all                         <- unique(eflalo[, "VE_REF"])
+  vids_bottomfishing_baltic        <- unique(eflalo[eflalo$area %in% c("2224", "2532") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
+  vids_bottomfishing_nseakask      <- unique(eflalo[eflalo$area %in% c("nsea", "kask") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
   
+  selected_vessels_set_1  <-  as.character(unique(vids_all[ vids_all %in%  loglike$VE_REF ]))  
+  selected_vessels_set_2  <-  as.character(unique(vids_bottomfishing_baltic[ vids_bottomfishing_baltic %in%  vids_bottomfishing_baltic ]))  
+  selected_vessels_set_3  <-  as.character(unique(vids_bottomfishing_nseakask[ vids_bottomfishing_nseakask %in%  vids_bottomfishing_nseakask ]))   
+  selected_vessels_set_1  <- selected_vessels_set_1[!is.na(selected_vessels_set_1)]
+  selected_vessels_set_2  <- selected_vessels_set_2[!is.na(selected_vessels_set_2)]
+  selected_vessels_set_3  <- selected_vessels_set_3[!is.na(selected_vessels_set_3)]
+ 
+  write.table(selected_vessels_set_1, file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_1.dat",sep='')), col.names=FALSE, row.names=FALSE)
+  write.table(selected_vessels_set_2, file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_2.dat",sep='')), col.names=FALSE, row.names=FALSE)
+  write.table(selected_vessels_set_3, file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_3.dat",sep='')), col.names=FALSE, row.names=FALSE)
+  } else{
+   selected_vessels_set_1 <- as.character(read.table(file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_1.dat",sep='')), header=FALSE)[,1])
+   selected_vessels_set_2 <-as.character(read.table(file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_2.dat",sep='')), header=FALSE)[,1])
+    selected_vessels_set_3 <- as.character(read.table(file.path(general$main.path, general$case_study,
+           paste("selected_vessels_set_3.dat",sep='')), header=FALSE)[,1])
+   
+  
+  }
+  
+  
+  save(selected_vessels_set_1, selected_vessels_set_2, selected_vessels_set_3,
+    file=file.path(general$main.path, general$namefolderinput, 
+                     paste("selected_vessels.RData", sep='')) )
+  
+
+ 
+
+   aggregratLoglikeFiles(general=general, what="weight",
+             explicit_pops=explicit_pops2,
+             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
+             selected_vessels_set1=selected_vessels_set_1,
+             selected_vessels_set2=selected_vessels_set_2,
+             selected_vessels_set3=selected_vessels_set_3)  
+
+
+
+} # end FALSE  
 

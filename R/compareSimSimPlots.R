@@ -683,5 +683,62 @@ if(FALSE){
 
 
 
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!SCRIPT CALLS!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
 
+
+if(FALSE){
+
+  # an example of workflow
+
+  setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+                                       case_study="DanishFleet",
+                                       igraph=41,
+                                       a.year="2015",
+                                       a.country="DEN",
+                                       nbpops=39,
+                                       nbszgroup=14,
+                                       namefolderinput="DanishFleet",
+                                       the_scenarios= c("svana_baseline",
+                                                       "svana_sub1mx20",
+                                                       "svana_sub4mx20",
+                                                       "svana_sub4mx5ns20bt",
+                                                       "svana_sub4mx20ns5bt",
+                                                       "svana_sub4mx5ns5bt" ),
+                                       nbsimus=20
+                                       )
+
+
+   if(FALSE){
+     aggregratLoglikeFiles(general=general, what="weight",
+             explicit_pops=explicit_pops2,
+             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
+             selected_vessels_set1=selected_vessels_set_1,
+             selected_vessels_set2=selected_vessels_set_2,
+             selected_vessels_set3=selected_vessels_set_3)
+   } else{
+     loadLoglikeFiles (general, use_port_info=FALSE)
+   }
+
+
+   compareSimSimPlots (lst_loglike_agg_1, lst_loglike_agg_2, years_span=2015:2019,  explicit_pops=explicit_pops, plot_obs=TRUE,
+                                       idx.sim=list(sce1=c(1), sce2=c(1)), combined_name=c("baseline_vs_implicit"),
+                                         a.comment="", what="per_vessel", what2="weight", count=0,
+                                          a.xlab="", a.ylab="", a.unit=1, do_mtext=FALSE)
+    #=> generate a  wealth of graphs, but also some general output files...
+
+
+   stressBarplot (general=general,
+                          the_baseline="svana_baseline",
+                          selected_vessels="selected_vessels_set_1",
+                          by_class=NULL,
+                          a_width=3000, a_height=2000)
+
+
+
+
+} # end FALSE
 

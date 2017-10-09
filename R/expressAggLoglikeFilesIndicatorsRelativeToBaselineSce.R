@@ -11,6 +11,7 @@
 #' expressAggLoglikeFilesIndicatorsRelativeToBaselineSce(general=general, the_baseline, sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
 
 
+
 expressAggLoglikeFilesIndicatorsRelativeToBaselineSce <- function(general,
                               the_baseline = "svana_baseline",
                               sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_")) {
@@ -591,4 +592,58 @@ write.table(outcomes,
               sep=";", quote=FALSE, row.names=FALSE)
 
 } # end for-loop on sets
+
+
+
+
+
+
+#!! SCRIPT CALLS !!#
+
+if(FALSE){
+
+# an example of worflow
+
+setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+                                       case_study="DanishFleet",
+                                       igraph=41,
+                                       a.year="2015",
+                                       a.country="DEN",
+                                       nbpops=39,
+                                       nbszgroup=14,
+                                       namefolderinput="DanishFleet",
+                                       the_scenarios= c("svana_baseline",
+                                                       "svana_sub1mx20",
+                                                       "svana_sub4mx20",
+                                                       "svana_sub4mx5ns20bt",
+                                                       "svana_sub4mx20ns5bt",
+                                                       "svana_sub4mx5ns5bt" ),
+                                       nbsimus=20
+                                       )
+
+
+if(FALSE){
+  aggregratLoglikeFiles(general=general, what="weight",
+             explicit_pops=explicit_pops2,
+             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
+             selected_vessels_set1=selected_vessels_set_1,
+             selected_vessels_set2=selected_vessels_set_2,
+             selected_vessels_set3=selected_vessels_set_3)
+} else{
+  loadLoglikeFiles (general, use_port_info=FALSE)
+}
+
+
+expressAggLoglikeFilesIndicatorsRelativeToBaselineSce(general,
+                              the_baseline = "svana_baseline",
+                              sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
+
+
+boxplotAggLoglikeFilesIndicators (general= general,
+                                             the_baseline="svana_baseline",
+                                             sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
+
+
+} # end FALSE
+
 

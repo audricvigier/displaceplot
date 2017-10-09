@@ -19,7 +19,7 @@ setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLA
                                        nbpops=39,
                                        nbszgroup=14,
                                        namefolderinput="DanishFleet",
-                                       the_scenarios1= c("svana_baseline", 
+                                       the_scenarios= c("svana_baseline", 
                                                        "svana_sub1mx20", 
                                                        "svana_sub4mx20", 
                                                        "svana_sub4mx5ns20bt", 
