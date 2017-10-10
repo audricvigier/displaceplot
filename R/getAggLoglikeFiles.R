@@ -347,7 +347,7 @@
         print(nrow(lf))
         most_freq_nb_of_field <- names(table(cnts)) [table(cnts)==max(table(cnts))]
         #!#!#!#!#!#!#!#!#!
-           if(general$case_study=="DanishFleet")    lf <- lf[lf[,2]==most_freq_nb_of_field,][,-2] # filter out if != most_freq_nb_of_field
+        lf <- lf[lf[,2]==most_freq_nb_of_field,][,-2] # filter out if != most_freq_nb_of_field
         #!#!#!#!#!#!#!#!#!
         print(length(lf))
         # Write data out and read it back in (temporarily)
@@ -503,13 +503,8 @@
     loglike.agg <- DT[,eval(eq1), by= eval(a_by)]
     loglike.agg <- data.frame( loglike.agg)
     colnames(loglike.agg) <- c(agg_by, colnames(loglike)[idx.col] )
-#    if("year.month" %in% agg_by) {
-#       loglike.agg <- loglike.agg[order(loglike.agg[,"year.month"]),] # order
-#       } else{ 
-#       loglike.agg <- loglike.agg[order(loglike.agg[,agg_by[1]]),] # order
-#       }
-       library(doBy)
-       loglike.agg <- orderBy (as.formula(paste("~ ", paste(agg_by, collapse="+"))), data=loglike.agg) # order to ensure same order when collating....
+    library(doBy)
+    loglike.agg <- orderBy (as.formula(paste("~ ", paste(agg_by, collapse="+"))), data=loglike.agg) # order to ensure same order when collating....
     # AGGREGATE PER SPECIES -----> MEAN
     idx.col.e  <- grep('effort', nm)
     idx.col.b  <- grep('bwtrip', nm)
@@ -526,13 +521,8 @@
     some_col_names_redundant <-  some_col_names [some_col_names %in%  colnames(loglike.agg[,-c(1:length(agg_by))])] 
     some_col_names [some_col_names %in% some_col_names_redundant] <- paste0("av_",some_col_names_redundant)  # a fix
     colnames(loglike.agg2)   <- c(agg_by, some_col_names )
-#    if("year.month" %in% agg_by) {
-#       loglike.agg2 <- loglike.agg[order(loglike.agg2[,"year.month"]),] # order
-#       } else{ 
-#       loglike.agg2 <- loglike.agg[order(loglike.agg2[,agg_by[1]]),] # order
-#       }
-       library(doBy)
-       loglike.agg2 <- orderBy (as.formula(paste("~ ", paste(agg_by, collapse="+"))), data=loglike.agg2) # order to ensure same order when collating....
+    library(doBy)
+    loglike.agg2 <- orderBy (as.formula(paste("~ ", paste(agg_by, collapse="+"))), data=loglike.agg2) # order to ensure same order when collating....
     # collate
     loglike.agg <- cbind(loglike.agg, loglike.agg2[,-c(1:length(agg_by))])
 
@@ -716,10 +706,7 @@ if(.Platform$OS.type == "windows") {
  } # end for sce
 
  
- ###=> NOW WE HAVE THE LIST OBJECTS FOR ALL SCE WHICH CAN BE USED FURTHER BY:
-          ## compare_obs_sim_landings()
-          ## compare_sim_sim_landings()  (...two by two, for now)
-
+ 
 return()
 }
 
