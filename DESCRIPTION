@@ -12,7 +12,12 @@ Description: DISPLACE simulation generates a lot of text-based output files
 Imports:
     data.table,
 	maptools,
-	ggplot2
+	ggplot2,
+	doBy,
+	lattice,
+	RColorBrewer,
+	sp,
+	mapdata
 Suggests:
     vmstools
 Depends: R (>= 3.4.0)

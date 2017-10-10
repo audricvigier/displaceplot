@@ -181,16 +181,17 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
      # get an idea per area
-     library(vmstools)
+     er <- require(vmstools)
+     if(!er){
      this$SI_LATI <- this$lat
      this$SI_LONG <- this$long
      data(ICESareas)
      this$area <- ICESarea(this, ICESareas, fast=TRUE)
      this$area <- factor(this$area)
      levels(this$area)[! levels(this$area) %in% selected_areas_for_table] <- "Other"
+     }
      table_obj[sce, ] <-  tapply(this [, a_type], this$area, sum, na.rm=TRUE)[colnames(table_obj)]
-
-
+     
 
 
 
