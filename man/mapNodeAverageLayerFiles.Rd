@@ -6,8 +6,8 @@
 \usage{
 mapNodeAverageLayerFiles(general, a_type = "cumcatches",
   the_baseline = "svana_baseline",
-  selected_scenarios_for_plot = general$namefolderoutputs,
-  selected_scenarios_for_table = general$namefolderoutputs,
+  selected_scenarios_for_plot = general$namefolderoutput,
+  selected_scenarios_for_table = general$namefolderoutput,
   selected_areas_for_table = c("22", "23", "24", "25", "IIIa", "IVa", "IVb",
   "IVc"), the_breaks_baseline = c(0.5, 1, round(exp(seq(0.5, 14, by = 1.2))),
   1e+06), gis_shape = list(), a_width = 3400, a_height = 3500,

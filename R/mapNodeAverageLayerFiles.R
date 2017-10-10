@@ -82,8 +82,8 @@
 
 
 mapNodeAverageLayerFiles <- function(general, a_type="cumcatches",  the_baseline= "svana_baseline",
-                            selected_scenarios_for_plot=general$namefolderoutputs,
-                            selected_scenarios_for_table=general$namefolderoutputs,
+                            selected_scenarios_for_plot=general$namefolderoutput,
+                            selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
                             the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.2))), 1000000),
                             gis_shape=list(),
@@ -183,12 +183,17 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      # get an idea per area
      er <- require(vmstools)
      if(!er){
-     this$SI_LATI <- this$lat
-     this$SI_LONG <- this$long
-     data(ICESareas)
-     this$area <- ICESarea(this, ICESareas, fast=TRUE)
-     this$area <- factor(this$area)
-     levels(this$area)[! levels(this$area) %in% selected_areas_for_table] <- "Other"
+        this$SI_LATI <- this$lat
+        this$SI_LONG <- this$long
+        data(ICESareas)
+        this$area <- ICESarea(this, ICESareas, fast=TRUE)
+        this$area <- factor(this$area)
+        levels(this$area)[! levels(this$area) %in% selected_areas_for_table] <- "Other"
+     } else{
+        if (is.null(this$area)) {
+           this$area <- NA
+           warning("No area code found here. Try to install vmstools if within ICES area and re-run, otherwise add an area field by hand to the input file", call. = FALSE)
+        }
      }
      table_obj[sce, ] <-  tapply(this [, a_type], this$area, sum, na.rm=TRUE)[colnames(table_obj)]
      
