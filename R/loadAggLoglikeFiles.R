@@ -1,6 +1,6 @@
 
 
-#' Displace plot
+#' Re-load outcome files of getAggLoglikeFiles() in the global env.
 #'
 #' This function re-load the files produced by getAggLoglikeFiles()
 #'

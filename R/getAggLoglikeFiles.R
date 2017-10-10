@@ -1,26 +1,112 @@
             
-#' Displace plot 
+#' Processing the loglike.dat files (maybe better for you to use it on HPC) 
 #'
-#' This function process the loglike_simu*.dat files 
+#' This function process the loglike_simu_xxx.dat files 
 #'
 #' @param fname First name
 #' @param lname Last name
 #' @export
 #' @examples
-#' do_aggregration_of_loglike_files(general=general, what="weight",
+#' general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+#'                                       case_study="DanishFleet",
+#'                                       igraph=41,
+#'                                       a.year="2015",
+#'                                       a.country="DEN",
+#'                                       nbpops=39,
+#'                                       nbszgroup=14,
+#'                                       namefolderinput="DanishFleet",
+#'                                       the_scenarios= c("svana_baseline", 
+#'                                                       "svana_sub1mx20", 
+#'                                                       "svana_sub4mx20", 
+#'                                                       "svana_sub4mx5ns20bt", 
+#'                                                       "svana_sub4mx20ns5bt", 
+#'                                                       "svana_sub4mx5ns5bt" ),
+#'                                       nbsimus=20
+#'                                       )
+#'
+#'
+#'  if(FALSE){
+#'  load(file.path(general$main.path.param, "FISHERIES",
+#'           paste("logbooks_DNK_","2015",".RData",sep=''))) 
+#'  eflalo                           <- cbind.data.frame (logbooks, totland=apply(logbooks[, grep("LE_KG", colnames(logbooks))],  1, sum, na.rm=TRUE )  )
+#'  eflalo                           <- cbind(eflalo, ICESrectangle2LonLat(eflalo$LE_RECT))
+#'  eflalo$area                      <- ICESarea2 (eflalo[, c("SI_LONG", "SI_LATI")])
+#'  bottomfishingmets                <- as.character(unique(eflalo$LE_MET)[ unique(
+#'                                             c(grep("OTB", unique(eflalo$LE_MET)),
+#'                                               grep("PTB", unique(eflalo$LE_MET)),
+#'                                               grep("SDN", unique(eflalo$LE_MET)),
+#'                                               grep("PS", unique(eflalo$LE_MET)),
+#'                                               grep("SSC", unique(eflalo$LE_MET)),
+#'                                               grep("TBB", unique(eflalo$LE_MET)),
+#'                                               grep("DRB", unique(eflalo$LE_MET))
+#'                                                 )
+#'                                            )])  
+#'                                            
+#'  
+#'  vids_all                         <- unique(eflalo[, "VE_REF"])
+#'  vids_bottomfishing_baltic        <- unique(eflalo[eflalo$area %in% c("2224", "2532") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
+#'  vids_bottomfishing_nseakask      <- unique(eflalo[eflalo$area %in% c("nsea", "kask") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
+#'  
+#'  selected_vessels_set_1  <-  as.character(unique(vids_all[ vids_all %in%  loglike$VE_REF ]))  
+#'  selected_vessels_set_2  <-  as.character(unique(vids_bottomfishing_baltic[ vids_bottomfishing_baltic %in%  vids_bottomfishing_baltic ]))  
+#'  selected_vessels_set_3  <-  as.character(unique(vids_bottomfishing_nseakask[ vids_bottomfishing_nseakask %in%  vids_bottomfishing_nseakask ]))   
+#'  selected_vessels_set_1  <- selected_vessels_set_1[!is.na(selected_vessels_set_1)]
+#'  selected_vessels_set_2  <- selected_vessels_set_2[!is.na(selected_vessels_set_2)]
+#' selected_vessels_set_3  <- selected_vessels_set_3[!is.na(selected_vessels_set_3)]
+#' 
+#'  write.table(selected_vessels_set_1, file.path(general$main.path, general$case_study,
+#'           paste("selected_vessels_set_1.dat",sep='')), col.names=FALSE, row.names=FALSE)
+#'  write.table(selected_vessels_set_2, file.path(general$main.path, general$case_study,
+#'           paste("selected_vessels_set_2.dat",sep='')), col.names=FALSE, row.names=FALSE)
+#'  write.table(selected_vessels_set_3, file.path(general$main.path, general$case_study,
+#'           paste("selected_vessels_set_3.dat",sep='')), col.names=FALSE, row.names=FALSE)
+#'  } else{
+#'   selected_vessels_set_1 <- as.character(read.table(file.path(general$main.path, general$case_study,
+#'           paste("selected_vessels_set_1.dat",sep='')), header=FALSE)[,1])
+#'   selected_vessels_set_2 <-as.character(read.table(file.path(general$main.path, general$case_study,
+#'           paste("selected_vessels_set_2.dat",sep='')), header=FALSE)[,1])
+#'    selected_vessels_set_3 <- as.character(read.table(file.path(general$main.path, general$case_study,
+#'           paste("selected_vessels_set_3.dat",sep='')), header=FALSE)[,1])
+#'   
+#'  
+#'  }
+#'  
+#'  
+#'  save(selected_vessels_set_1, selected_vessels_set_2, selected_vessels_set_3,
+#'    file=file.path(general$main.path, general$namefolderinput, 
+#'                     paste("selected_vessels.RData", sep='')) )
+#'  
+#'
+#' 
+#'
+#'   aggregratLoglikeFiles(general=general, what="weight",
 #'             explicit_pops=explicit_pops2,
 #'             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
 #'             selected_vessels_set1=selected_vessels_set_1,
-#'             selected_vessels_set2=selected_vessels_set_2,
+#'            selected_vessels_set2=selected_vessels_set_2,
 #'             selected_vessels_set3=selected_vessels_set_3)  
+#'
 
 
 
+  
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!AGGREGATE (UTILS)!!!!!!!!!!!!!!!!!!!!!!!##
+ ##!!!!!!!!!!!!!!LOGLIKE.DAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-   c.listquote <- function (...)
+ ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+ aggregratLoglikeFiles <- function(general=general, 
+                                              what="weight", 
+                                              explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
+                                              implicit_pops=c(0,1,2,4,5,6,8,9,11:30),
+                                              selected_vessels_set1=selected_vessels_set1,
+                                              selected_vessels_set2=selected_vessels_set2,
+                                              selected_vessels_set3=selected_vessels_set3
+                                              ){
+ 
+ 
+ 
+  c.listquote <- function (...)
    {
     args <- as.list(match.call()[-1])
     lstquote <- list(as.symbol("list"))
@@ -42,10 +128,9 @@
     }
     return(as.call(lstquote))
    }
-
-  ICESarea2 <-
-function (tacsat, string = TRUE)
-{
+   
+  ICESarea2 <- function (tacsat, string = TRUE)
+   {
     library(sp)
     ICES.area <- rep(NA, dim(tacsat)[1])
     ICES.area[point.in.polygon(point.x = tacsat$SI_LONG, point.y = tacsat$SI_LATI,
@@ -127,10 +212,10 @@ function (tacsat, string = TRUE)
             55.9, 55.65, 55, 54.67, 54.56, 54.56, 53.75, 53.75,
             56.6)) > 0] <- ifelse(string,'2224', '2')
     return(ICES.area)
-}
+   }
 
  ICESrectangle <- function (dF) 
-{
+   {
     rectChar1n2 <- as.integer(2 * (dF[, "SI_LATI"] - 35.5))
     rectChar3 <- ifelse(dF[, "SI_LONG"] <= -40, "A", ifelse(dF[, 
         "SI_LONG"] <= -30, "B", ifelse(dF[, "SI_LONG"] <= -20, 
@@ -141,7 +226,7 @@ function (tacsat, string = TRUE)
     rectChar4 <- as.integer(dF[, "SI_LONG"]%%10)
     rectID <- paste(rectChar1n2, rectChar3, rectChar4, sep = "")
     return(rectID)
-}
+   }
  
                         
  ICESrectangle2LonLat <- function (statsq, midpoint = F) {
@@ -171,58 +256,52 @@ function (tacsat, string = TRUE)
 
 
 
-loadGraph <- function(){
- # load the graph
-  #load(file.path(general$main.path.igraph, paste(general$igraph, "_graphibm.RData",sep=''))) # built from the R code
-  coord <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
+   loadGraph <- function(){
+    # load the graph
+     #load(file.path(general$main.path.igraph, paste(general$igraph, "_graphibm.RData",sep=''))) # built from the R code
+     coord <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
              paste("coord", general$igraph, ".dat", sep=""))) # build from the c++ gui
-  coord <- as.matrix(as.vector(coord))
-  coord <- matrix(coord, ncol=3)
-  colnames(coord) <- c('x', 'y', 'harb')
-  plot(coord[,1], coord[,2])
+     coord <- as.matrix(as.vector(coord))
+     coord <- matrix(coord, ncol=3)
+     colnames(coord) <- c('x', 'y', 'harb')
+     plot(coord[,1], coord[,2])
 
-  graph <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
+     graph <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
            paste("graph", general$igraph, ".dat", sep=""))) # build from the c++ gui
-  graph <- as.matrix(as.vector(graph))
-  graph <- matrix(graph, ncol=3)
-  segments(coord[graph[,1]+1,1], coord[graph[,1]+1,2], coord[graph[,2]+1,1], coord[graph[,2]+1,2], col=4) # CAUTION: +1, because c++ to R
+     graph <- as.matrix(as.vector(graph))
+     graph <- matrix(graph, ncol=3)
+     segments(coord[graph[,1]+1,1], coord[graph[,1]+1,2], coord[graph[,2]+1,1], coord[graph[,2]+1,2], col=4) # CAUTION: +1, because c++ to R
 
-  return(graph)
-  }
+     return(graph)
+     }
+     
 
-loadCoord <- function(){
- # load the graph
-  #load(file.path(general$main.path.igraph, paste(general$igraph, "_graphibm.RData",sep=''))) # built from the R code
-  coord <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
+   loadCoord <- function(){
+    # load the graph
+    #load(file.path(general$main.path.igraph, paste(general$igraph, "_graphibm.RData",sep=''))) # built from the R code
+    coord <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
              paste("coord", general$igraph, ".dat", sep=""))) # build from the c++ gui
-  coord <- as.matrix(as.vector(coord))
-  coord <- matrix(coord, ncol=3)
-  colnames(coord) <- c('x', 'y', 'harb')
-  plot(coord[,1], coord[,2])
+    coord <- as.matrix(as.vector(coord))
+    coord <- matrix(coord, ncol=3)
+    colnames(coord) <- c('x', 'y', 'harb')
+    plot(coord[,1], coord[,2])
 
-  graph <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
+    graph <- read.table(file=file.path(general$main.path.ibm, "graphsspe", 
            paste("graph", general$igraph, ".dat", sep=""))) # build from the c++ gui
-  graph <- as.matrix(as.vector(graph))
-  graph <- matrix(graph, ncol=3)
-  segments(coord[graph[,1]+1,1], coord[graph[,1]+1,2], coord[graph[,2]+1,1], coord[graph[,2]+1,2], col=4) # CAUTION: +1, because c++ to R
+    graph <- as.matrix(as.vector(graph))
+    graph <- matrix(graph, ncol=3)
+    segments(coord[graph[,1]+1,1], coord[graph[,1]+1,2], coord[graph[,2]+1,1], coord[graph[,2]+1,2], col=4) # CAUTION: +1, because c++ to R
 
-  return(coord)
-  }
+    return(coord)
+    }
 
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!LOGLIKE.DAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- aggregratLoglikeFiles <- function(general=general, 
-                                              what="weight", 
-                                              explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
-                                              implicit_pops=c(0,1,2,4,5,6,8,9,11:30),
-                                              selected_vessels_set1=selected_vessels_set1,
-                                              selected_vessels_set2=selected_vessels_set2,
-                                              selected_vessels_set3=selected_vessels_set3
-                                              ){
  
+ 
+ 
+ 
+ 
+ 
+  #--------------------------------
   explicit_pops_params <- explicit_pops   # save
   implicit_pops_params <- implicit_pops   # save
   
@@ -645,95 +724,5 @@ return()
 
 
 
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!SCRIPT CALLS!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
 
-
-if(FALSE){
- 
-  # an example of workflow
-      
-  setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
-                                       case_study="DanishFleet",
-                                       igraph=41,
-                                       a.year="2015",
-                                       a.country="DEN",
-                                       nbpops=39,
-                                       nbszgroup=14,
-                                       namefolderinput="DanishFleet",
-                                       the_scenarios= c("svana_baseline", 
-                                                       "svana_sub1mx20", 
-                                                       "svana_sub4mx20", 
-                                                       "svana_sub4mx5ns20bt", 
-                                                       "svana_sub4mx20ns5bt", 
-                                                       "svana_sub4mx5ns5bt" ),
-                                       nbsimus=20
-                                       )
-
-
-  load(file.path(general$main.path.param, "FISHERIES",
-           paste("logbooks_DNK_","2015",".RData",sep=''))) 
-  eflalo                           <- cbind.data.frame (logbooks, totland=apply(logbooks[, grep("LE_KG", colnames(logbooks))],  1, sum, na.rm=TRUE )  )
-  eflalo                           <- cbind(eflalo, ICESrectangle2LonLat(eflalo$LE_RECT))
-  eflalo$area                      <- ICESarea2 (eflalo[, c("SI_LONG", "SI_LATI")])
-  bottomfishingmets                <- as.character(unique(eflalo$LE_MET)[ unique(
-                                             c(grep("OTB", unique(eflalo$LE_MET)),
-                                               grep("PTB", unique(eflalo$LE_MET)),
-                                               grep("SDN", unique(eflalo$LE_MET)),
-                                               grep("PS", unique(eflalo$LE_MET)),
-                                               grep("SSC", unique(eflalo$LE_MET)),
-                                               grep("TBB", unique(eflalo$LE_MET)),
-                                               grep("DRB", unique(eflalo$LE_MET))
-                                                 )
-                                            )])  
-                                            
-  vids_all                         <- unique(eflalo[, "VE_REF"])
-  vids_bottomfishing_baltic        <- unique(eflalo[eflalo$area %in% c("2224", "2532") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
-  vids_bottomfishing_nseakask      <- unique(eflalo[eflalo$area %in% c("nsea", "kask") & eflalo$LE_MET %in% bottomfishingmets, "VE_REF"])
-  
-  selected_vessels_set_1  <-  as.character(unique(vids_all[ vids_all %in%  loglike$VE_REF ]))  
-  selected_vessels_set_2  <-  as.character(unique(vids_bottomfishing_baltic[ vids_bottomfishing_baltic %in%  vids_bottomfishing_baltic ]))  
-  selected_vessels_set_3  <-  as.character(unique(vids_bottomfishing_nseakask[ vids_bottomfishing_nseakask %in%  vids_bottomfishing_nseakask ]))   
-  selected_vessels_set_1  <- selected_vessels_set_1[!is.na(selected_vessels_set_1)]
-  selected_vessels_set_2  <- selected_vessels_set_2[!is.na(selected_vessels_set_2)]
-  selected_vessels_set_3  <- selected_vessels_set_3[!is.na(selected_vessels_set_3)]
- 
-  write.table(selected_vessels_set_1, file.path(general$main.path, general$case_study,
-           paste("selected_vessels_set_1.dat",sep='')), col.names=FALSE, row.names=FALSE)
-  write.table(selected_vessels_set_2, file.path(general$main.path, general$case_study,
-           paste("selected_vessels_set_2.dat",sep='')), col.names=FALSE, row.names=FALSE)
-  write.table(selected_vessels_set_3, file.path(general$main.path, general$case_study,
-           paste("selected_vessels_set_3.dat",sep='')), col.names=FALSE, row.names=FALSE)
-  } else{
-   selected_vessels_set_1 <- as.character(read.table(file.path(general$main.path, general$case_study,
-           paste("selected_vessels_set_1.dat",sep='')), header=FALSE)[,1])
-   selected_vessels_set_2 <-as.character(read.table(file.path(general$main.path, general$case_study,
-           paste("selected_vessels_set_2.dat",sep='')), header=FALSE)[,1])
-    selected_vessels_set_3 <- as.character(read.table(file.path(general$main.path, general$case_study,
-           paste("selected_vessels_set_3.dat",sep='')), header=FALSE)[,1])
-   
-  
-  }
-  
-  
-  save(selected_vessels_set_1, selected_vessels_set_2, selected_vessels_set_3,
-    file=file.path(general$main.path, general$namefolderinput, 
-                     paste("selected_vessels.RData", sep='')) )
-  
-
- 
-
-   aggregratLoglikeFiles(general=general, what="weight",
-             explicit_pops=explicit_pops2,
-             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
-             selected_vessels_set1=selected_vessels_set_1,
-             selected_vessels_set2=selected_vessels_set_2,
-             selected_vessels_set3=selected_vessels_set_3)  
-
-
-
-} # end FALSE  
 

@@ -1,7 +1,7 @@
 
 
             
-#' Displace plot 
+#' Produce an average spatial layer as first step to do a map 
 #'
 #' This function generates an average layer as a first step to generate maps from popnodes files 
 #'
@@ -9,7 +9,29 @@
 #' @param lname Last name
 #' @export
 #' @examples
-#' getAggNodeLayerFiles(general=general, type="cumcatches", a_tstep="34321")  
+#' general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
+#'                                       case_study="DanishFleet",
+#'                                       igraph=41,
+#'                                       a.year="2015",
+#'                                       a.country="DEN",
+#'                                       nbpops=39,
+#'                                       nbszgroup=14,
+#'                                       namefolderinput="DanishFleet",
+#'                                       the_scenarios= c("svana_baseline",
+#'                                                       "svana_sub1mx20",
+#'                                                       "svana_sub4mx20",
+#'                                                       "svana_sub4mx5ns20bt",
+#'                                                       "svana_sub4mx20ns5bt",
+#'                                                       "svana_sub4mx5ns5bt" ),
+#'                                       nbsimus=20
+#'                                       )
+#'
+#'
+#' getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
+#'  #=> produce files in output folders....
+#'
+
+
 
 
 
@@ -75,39 +97,6 @@ getAggNodeLayerFiles <- function(general, a_type="cumcatches", a_tstep="34321"){
 
 
 return()
-}
-
-
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!SCRIPT CALLS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-
-
-if(FALSE){
-
- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
-                                       case_study="DanishFleet",
-                                       igraph=41,
-                                       a.year="2015",
-                                       a.country="DEN",
-                                       nbpops=39,
-                                       nbszgroup=14,
-                                       namefolderinput="DanishFleet",
-                                       the_scenarios= c("svana_baseline",
-                                                       "svana_sub1mx20",
-                                                       "svana_sub4mx20",
-                                                       "svana_sub4mx5ns20bt",
-                                                       "svana_sub4mx20ns5bt",
-                                                       "svana_sub4mx5ns5bt" ),
-                                       nbsimus=20
-                                       )
-
-
-getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
-  #=> produce files in output folders....
-
 }
 
 

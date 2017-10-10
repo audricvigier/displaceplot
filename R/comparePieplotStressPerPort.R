@@ -1,6 +1,6 @@
 
 
-#' Displace plot
+#' Produce pie plots centered on ports with proportion affected vessels in classes of stress
 #'
 #' This function produces pieplots centered on ports of %  of vessel affected per bin for various indicators facing baseline sce
 #'
@@ -8,21 +8,81 @@
 #' @param lname Last name
 #' @export
 #' @examples
+#' general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
+#'                                       case_study="DanishFleet",
+#'                                       igraph=41,
+#'                                       a.year="2015",
+#'                                       a.country="DEN",
+#'                                       nbpops=39,
+#'                                       nbszgroup=14,
+#'                                       namefolderinput="DanishFleet",
+#'                                       the_scenarios= c("svana_baseline",
+#'                                                       "svana_sub1mx20",
+#'                                                       "svana_sub4mx20",
+#'                                                       "svana_sub4mx5ns20bt",
+#'                                                       "svana_sub4mx20ns5bt",
+#'                                                       "svana_sub4mx5ns5bt" ),
+#'                                       nbsimus=20
+#'                                       )
+#'
+#'
+#'   library(maptools)
+#'   NSsub1mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
+#'                                                     'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub1_mx20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
+#'   BSsub1mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
+#'                                                     'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub1_Mx_20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
+#'   NSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
+#'                                                       'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub4_mx_20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
+#'   BSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
+#'                                                         'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub4_Mx_20LongTailedD_wgs84'), proj4string=CRS("+proj=longlat #'+ellps=WGS84"))
+#'
+#'
+#'  
+#'  
+#' loadLoglikeFiles (general, use_port_info=TRUE)
+#'
+#'
 #' comparePieplotStressPerPort (general,
 #'                                       nbsim=20,
+#'                                       the_baseline="svana_baseline",
 #'                                       a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
 #'                                                                                   y=c(46.47831, 52.22793, 63.08831, 62.44946)),
 #'                                       selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
 #'                                       gis_shape=list(
 #'                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
-#'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
+#'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
 #'                                           a_width= 3200, a_height =2100, xlims =  c(7, 16), ylims = c(53.5,59)
-#'                                        )
+#'                                           ) 
 
 
 
 
- compare_per_port <- function(
+ 
+
+
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
+
+
+
+
+comparePieplotStressPerPort <- function(general,
+                                       nbsim=20,
+                                       the_baseline="svana_baseline",
+                                       a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
+                                                                                   y=c(46.47831, 52.22793, 63.08831, 62.44946)),
+                                       selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
+                                       gis_shape=list(
+                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
+                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
+                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60)
+                                                               
+                                     ){
+
+ 
+ 
+  #-------------------
+  compare_per_port <- function(
           sim=1,
           a_polygon=list(x=c(13.27,9.08,11.25,15.15, 15.00,55.67),
                                   y=c(56.00,54.82,53.50,53.89,55.11,14.15)),
@@ -62,7 +122,7 @@
   ##-----------
   ##-----------
   ##---utils---
- compare_per_port_vessel <- function(
+  compare_per_port_vessel <- function(
           sim=1,
           a_polygon=list(x=c(13.27,9.08,11.25,15.15, 15.00,55.67),
                                   y=c(56.00,54.82,53.50,53.89,55.11,14.15)),
@@ -79,51 +139,31 @@
 
 
 
-   dd <-  aggregate(apply(obj1[,stock], 1, sum, na.rm=TRUE),
+    dd <-  aggregate(apply(obj1[,stock], 1, sum, na.rm=TRUE),
         list(obj1$land_port, obj1$VE_REF), sum, na.rm=TRUE)
-   colnames(dd)[3] <- "ref" 
-   dd2 <-  aggregate(apply(obj2[,stock], 1, sum, na.rm=TRUE),
+    colnames(dd)[3] <- "ref" 
+    dd2 <-  aggregate(apply(obj2[,stock], 1, sum, na.rm=TRUE),
          list(obj2$land_port, obj2$VE_REF), sum, na.rm=TRUE)
-   colnames(dd2)[3] <- "sce" 
+    colnames(dd2)[3] <- "sce" 
 
-   dd3 <- merge(dd, dd2)
+    dd3 <- merge(dd, dd2)
   
-   dd3$a_diff       <-  round(an(dd3[,"sce"])/  an(dd3[,"ref"]) *100  )    -100
+    dd3$a_diff       <-  round(an(dd3[,"sce"])/  an(dd3[,"ref"]) *100  )    -100
    
-  dd4 <-   tapply(obj1[,"rev_from_av_prices"],
+    dd4 <-   tapply(obj1[,"rev_from_av_prices"],
          list(obj1$land_port), sum, na.rm=TRUE)
   
-  dd3$totrevenue <- dd4 [as.character(dd3[,1])]
+    dd3$totrevenue <- dd4 [as.character(dd3[,1])]
   
-  dd3[is.infinite(dd3$a_diff), "a_diff"]  <- - 100
+    dd3[is.infinite(dd3$a_diff), "a_diff"]  <- - 100
 
  
-  return(dd3[!is.na(dd3$a_diff)  & !is.infinite(dd3$a_diff),])
-  }
+    return(dd3[!is.na(dd3$a_diff)  & !is.infinite(dd3$a_diff),])
+    }
 
 
-
-
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-
-
-
-
-comparePieplotStressPerPort <- function(general,
-                                       nbsim=20,
-                                       the_baseline="svana_baseline",
-                                       a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
-                                                                                   y=c(46.47831, 52.22793, 63.08831, 62.44946)),
-                                       selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
-                                       gis_shape=list(
-                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
-                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
-                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60)
-                                                               
-                                     ){
-
-   
+ 
+  #-------------------------------- 
   these_ports <- NULL
   what <- "weight"
   loglike_baseline <- get( paste("lst_loglike_agg_",what,"_vid_port_", the_baseline , sep=''), env=.GlobalEnv)
@@ -295,65 +335,10 @@ return()
 }
 
 
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!SCRIPT CALLS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
 
 
-if(FALSE){
-
-  # example of use
 
 
-  general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
-                                       case_study="DanishFleet",
-                                       igraph=41,
-                                       a.year="2015",
-                                       a.country="DEN",
-                                       nbpops=39,
-                                       nbszgroup=14,
-                                       namefolderinput="DanishFleet",
-                                       the_scenarios= c("svana_baseline",
-                                                       "svana_sub1mx20",
-                                                       "svana_sub4mx20",
-                                                       "svana_sub4mx5ns20bt",
-                                                       "svana_sub4mx20ns5bt",
-                                                       "svana_sub4mx5ns5bt" ),
-                                       nbsimus=20
-                                       )
-
-
-   library(maptools)
-   NSsub1mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
-                                                     'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub1_mx20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
-   BSsub1mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
-                                                     'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub1_Mx_20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
-   NSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
-                                                       'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub4_mx_20_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
-   BSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
-                                                         'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub4_Mx_20LongTailedD_wgs84'), proj4string=CRS("+proj=longlat +ellps=WGS84"))
-
-
-  
-  
- loadLoglikeFiles (general, use_port_info=TRUE)
-
-
- comparePieplotStressPerPort (general,
-                                       nbsim=20,
-                                       the_baseline="svana_baseline",
-                                       a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
-                                                                                   y=c(46.47831, 52.22793, 63.08831, 62.44946)),
-                                       selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
-                                       gis_shape=list(
-                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
-                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
-                                           a_width= 3200, a_height =2100, xlims =  c(7, 16), ylims = c(53.5,59)
-                                           ) 
-
-}  # end FALSE
 
 
 
