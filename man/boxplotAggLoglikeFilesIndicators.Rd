@@ -5,7 +5,8 @@
 \title{Reloading the files produced by getAggLoglikeFiles() in the global environment}
 \usage{
 boxplotAggLoglikeFilesIndicators(general = general,
-  the_baseline = "svana_baseline", sets = c("_selected_set1_",
+  the_baseline = "svana_baseline",
+  selected_scenarios = general$namefolderoutput, sets = c("_selected_set1_",
   "_selected_set2_", "_selected_set3_"))
 }
 \arguments{
@@ -64,6 +65,7 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
 
   boxplotAggLoglikeFilesIndicators (general= general,
                                             the_baseline="svana_baseline",
+                                            selected_scenarios =  general$namefolderoutput,
                                             sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
                  # => do the plot
   }

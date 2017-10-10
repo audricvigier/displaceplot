@@ -55,6 +55,7 @@
 #'
 #'   boxplotAggLoglikeFilesIndicators (general= general,
 #'                                             the_baseline="svana_baseline",
+#'                                             selected_scenarios =  general$namefolderoutput,
 #'                                             sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
 #'                  # => do the plot
 #'   }
@@ -64,6 +65,7 @@
 
 boxplotAggLoglikeFilesIndicators <- function(general= general,
                                              the_baseline="svana_baseline",
+                                             selected_scenarios = general$namefolderoutput,
                                              sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_")){
 
 
@@ -74,13 +76,13 @@ for (selected in sets){
                     paste("outcomes_all_simus_relative_to_baseline_sce_",selected, ".txt", sep='')), header=TRUE, sep=";")
 
  ## CAUTION: (not the same levels when reading or when using directly the obj in the env)
- levels (outcomes$scenario) <-  c("svana_sub1mx20",      "svana_sub4mx20",      "svana_sub4mx20ns5bt", "svana_sub4mx5ns20bt", "svana_sub4mx5ns5bt")
+ #levels (outcomes$scenario) <-  c("svana_sub1mx20",      "svana_sub4mx20",      "svana_sub4mx20ns5bt", "svana_sub4mx5ns20bt", "svana_sub4mx5ns5bt")
 
  # add baseline at 0,0,0, etc.
  baseline <- outcomes[outcomes$scenario == levels(outcomes$scenario)[1],]  # init
  baseline$ratio_percent <-0
  baseline$scenario <- the_baseline
- outcomes <- rbind.data.frame(baseline, outcomes)
+ outcomes          <- rbind.data.frame(baseline, outcomes)
  outcomes$scenario <- factor(outcomes$scenario)
 
  # select because too much info
@@ -96,7 +98,6 @@ for (selected in sets){
                                                                                         "Swept Area", "Revenue Per Swept Area",
                                                                                         "NPV", "VPUF", "Income inequality"))
 
- selected_scenarios <-  c("svana_baseline", "svana_sub1mx20",      "svana_sub4mx20",      "svana_sub4mx20ns5bt", "svana_sub4mx5ns20bt", "svana_sub4mx5ns5bt")
 
 
  outcomes <- outcomes[outcomes$scenario %in%selected_scenarios,]
