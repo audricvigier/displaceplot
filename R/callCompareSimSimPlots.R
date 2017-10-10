@@ -9,6 +9,8 @@
 #' @param lname Last name
 #' @export
 #' @examples
+#' 
+#' \dontrun{
 #' general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
 #'                                       case_study="DanishFleet",
 #'                                       igraph=41,
@@ -36,7 +38,7 @@
 #'                             per_pop=FALSE,
 #'                           per_vessel=TRUE)
 #'  #=> produce files in output folders....
-#'
+#'  }
 
 
 

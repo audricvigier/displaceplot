@@ -18,6 +18,8 @@ callCompareSimSimPlots(general, the_baseline = "svana_baseline",
 This function generates numerous graphics in a hierarchy of folders
 }
 \examples{
+
+\dontrun{
 general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -45,5 +47,5 @@ callCompareSimSimPlots (general,
                             per_pop=FALSE,
                           per_vessel=TRUE)
  #=> produce files in output folders....
-
+ }
 }

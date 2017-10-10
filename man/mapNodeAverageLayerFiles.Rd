@@ -22,6 +22,8 @@ mapNodeAverageLayerFiles(general, a_type = "cumcatches",
 This function generates maps from an average layer as a second step after call to getAggNodesLayerFiles()
 }
 \examples{
+
+\dontrun{
 general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -84,4 +86,5 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                                           svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5),
                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17
                                           ))
+}
 }

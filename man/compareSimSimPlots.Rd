@@ -20,6 +20,9 @@ compareSimSimPlots(lst_loglike_agg_1, lst_loglike_agg_2,
 This function produces a wealth of raw graphics in a output hierarchy of folders to compare scenarios vs. baseline sce
 }
 \examples{
+
+
+\dontrun{
 general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -66,5 +69,5 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                          selected_vessels=selected_vessels_set_1,
                          by_class=NULL,
                          a_width=1500, a_height=3500)
-
+  }
 }

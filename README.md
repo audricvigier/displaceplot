@@ -24,8 +24,23 @@ Use
 ------------
 First load the package into R and search for documentation by doing:
 ``` r
-library("displaceplot")
-library(help="displaceplot")
+library(displaceplot)
+library(help=displaceplot)
 ?mapNodeAverageLayerFiles
+```
+
+Dev.
+------------
+For Windows, compile with
+``` r
+ R CMD INSTALL --build displaceplot
+```
+For Unix-based, use
+``` r
+R CMD build displaceplot
+```
+Don´t forget to detach first when required with
+``` r
+detach('package:displaceplot', unload=TRUE)
 ```
 

@@ -17,10 +17,10 @@ stressBarplot(general = general, the_baseline = "svana_baseline",
 This function produces barplots of percentage of vessels affected per bin for various indicators facing baseline sce
 }
 \examples{
-if(FALSE){
+
 
  
-
+\dontrun{
 
  general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
@@ -59,5 +59,5 @@ if(FALSE){
                          a_width=1500, a_height=3500)
 
 
- }   # end FALSE
+ }  
 }

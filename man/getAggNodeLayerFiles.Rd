@@ -15,6 +15,8 @@ getAggNodeLayerFiles(general, a_type = "cumcatches", a_tstep = "34321")
 This function generates an average layer as a first step to generate maps from popnodes files
 }
 \examples{
+
+\dontrun{
 general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -35,5 +37,5 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
 
 getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
  #=> produce files in output folders....
-
+ }
 }

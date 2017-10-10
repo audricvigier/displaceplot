@@ -2,7 +2,7 @@
 % Please edit documentation in R/setGeneralVariable.R
 \name{setGeneralOverallVariable}
 \alias{setGeneralOverallVariable}
-\title{Displace plot}
+\title{Setting the general variable to use across other routines}
 \usage{
 setGeneralOverallVariable(main_path_outputs = file.path("C:",
   "DISPLACE_outputs"), case_study = "DanishFleet", igraph = 41,
@@ -20,5 +20,5 @@ setGeneralOverallVariable(main_path_outputs = file.path("C:",
 This function sets the general variable useful for relative file paths etc.
 }
 \examples{
-setGeneralVariable(case_study="DanishFleet")  
+general <- setGeneralOverallVariable()
 }

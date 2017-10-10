@@ -15,5 +15,7 @@ loadLoglikeFiles(general, use_port_info = FALSE)
 This function re-load the files produced by getAggLoglikeFiles()
 }
 \examples{
+ \dontrun{
 loadLoglikeFiles(general=general, use_port_info=FALSE)
+}
 }

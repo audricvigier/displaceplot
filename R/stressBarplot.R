@@ -8,10 +8,10 @@
 #' @param lname Last name
 #' @export
 #' @examples
-#'if(FALSE){
+#' 
 #'
 #'  
-#'
+#' \dontrun{
 #'
 #'  general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
 #'                                       case_study="DanishFleet",
@@ -50,7 +50,7 @@
 #'                          a_width=1500, a_height=3500)
 #'
 #'
-#'  }   # end FALSE
+#'  }  
 
 
 

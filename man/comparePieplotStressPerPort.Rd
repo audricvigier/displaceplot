@@ -22,6 +22,7 @@ comparePieplotStressPerPort(general, nbsim = 20,
 This function produces pieplots centered on ports of %  of vessel affected per bin for various indicators facing baseline sce
 }
 \examples{
+\dontrun{
 general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -67,4 +68,5 @@ comparePieplotStressPerPort (general,
                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
                                           a_width= 3200, a_height =2100, xlims =  c(7, 16), ylims = c(53.5,59)
                                           ) 
+ }
 }

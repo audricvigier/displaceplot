@@ -8,6 +8,7 @@
 #' @param lname Last name
 #' @export
 #' @examples
+#' \dontrun{
 #' general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
 #'                                       case_study="DanishFleet",
 #'                                       igraph=41,
@@ -53,7 +54,7 @@
 #'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
 #'                                           a_width= 3200, a_height =2100, xlims =  c(7, 16), ylims = c(53.5,59)
 #'                                           ) 
-
+#'  }
 
 
 

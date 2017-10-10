@@ -9,6 +9,8 @@
 #' @param lname Last name
 #' @export
 #' @examples
+#' 
+#' \dontrun{
 #' general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
 #'                                       case_study="DanishFleet",
 #'                                       igraph=41,
@@ -29,7 +31,7 @@
 #'
 #' getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
 #'  #=> produce files in output folders....
-#'
+#'  }
 
 
 

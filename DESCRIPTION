@@ -9,6 +9,10 @@ Description: DISPLACE simulation generates a lot of text-based output files
     However this suite of routines is only a suggestion and 
     the DISPLACE user might think about creating his own set derived
     from the ones presented here.
+Imports:
+    data.table,
+	maptools,
+	ggplot2
 Depends: R (>= 3.4.0)
 License: >GPL-2
 Encoding: UTF-8

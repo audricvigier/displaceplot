@@ -17,6 +17,8 @@ boxplotAggLoglikeFilesIndicators(general = general,
 This function re-load the files produced by getAggLoglikeFiles()
 }
 \examples{
+
+\dontrun{
 general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -57,5 +59,5 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                                             the_baseline="svana_baseline",
                                             sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
                  # => do the plot
-
+  }
 }

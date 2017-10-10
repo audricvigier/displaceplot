@@ -1,5 +1,5 @@
             
-#' Displace plot 
+#' Setting the general variable to use across other routines
 #'
 #' This function sets the general variable useful for relative file paths etc. 
 #'
@@ -7,7 +7,7 @@
 #' @param lname Last name
 #' @export
 #' @examples
-#' setGeneralVariable(case_study="DanishFleet")  
+#' general <- setGeneralOverallVariable()
 
 
 
@@ -74,18 +74,5 @@ setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLA
 
 return(general)
 } 
-
-
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
-
-if(FALSE){
-
-                    general <- setGeneralOverallVariable()
-
-}
 
 

@@ -20,6 +20,8 @@ aggregratLoglikeFiles(general = general, what = "weight",
 This function process the loglike_simu_xxx.dat files
 }
 \examples{
+
+\dontrun{
 general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
                                       case_study="DanishFleet",
                                       igraph=41,
@@ -98,5 +100,5 @@ selected_vessels_set_3  <- selected_vessels_set_3[!is.na(selected_vessels_set_3)
             selected_vessels_set1=selected_vessels_set_1,
            selected_vessels_set2=selected_vessels_set_2,
             selected_vessels_set3=selected_vessels_set_3)  
-
+  }
 }
