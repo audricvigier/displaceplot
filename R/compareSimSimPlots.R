@@ -34,7 +34,7 @@
 #'
 #'   if(FALSE){
 #'     aggregratLoglikeFiles(general=general, what="weight",
-#'             explicit_pops=explicit_pops2,
+#'             explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
 #'             implicit_pops=c (4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 27, 28, 29, 33, 34, 35, 36, 37, 38),
 #'             selected_vessels_set1=selected_vessels_set_1,
 #'             selected_vessels_set2=selected_vessels_set_2,

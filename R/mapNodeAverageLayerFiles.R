@@ -91,6 +91,17 @@ mapNodeAverageLayerFiles <- function(general, a_type="cumcatches",  the_baseline
                             ){
 
 
+ distance <- function (lon, lat, lonRef, latRef)  # vmstools::distance()
+{
+    pd <- pi/180
+    a1 <- sin(((latRef - lat) * pd)/2)
+    a2 <- cos(lat * pd)
+    a3 <- cos(latRef * pd)
+    a4 <- sin(((lonRef - lon) * pd)/2)
+    a <- a1 * a1 + a2 * a3 * a4 * a4
+    c <- 2 * atan2(sqrt(a), sqrt(1 - a))
+    return(6371 * c)
+}
 
     legend.gradient2 <-
 function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", legend="",
@@ -191,8 +202,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      la <- sort(this$round_lat, decreasing=TRUE)
      most_freq_in_long <- as.numeric(names(sort(table(diff(lo/xcell)), decreasing=TRUE)[2]))
      most_freq_in_lat  <- as.numeric(names(sort(table(diff(la/ycell)), decreasing=TRUE)[2]))
-     xcellkm <- vmstools::distance(this$round_long[1]/xcell, mean(this$round_lat)/ycell, (this$round_long[1]/xcell) + most_freq_in_long, mean(this$round_lat)/ycell)
-     ycellkm <- vmstools::distance(mean(this$round_long)/xcell, this$round_lat[2]/ycell , mean(this$round_long)/xcell, (this$round_lat[2]/ycell) + most_freq_in_lat)
+     xcellkm <- distance(this$round_long[1]/xcell, mean(this$round_lat)/ycell, (this$round_long[1]/xcell) + most_freq_in_long, mean(this$round_lat)/ycell)
+     ycellkm <- distance(mean(this$round_long)/xcell, this$round_lat[2]/ycell , mean(this$round_long)/xcell, (this$round_lat[2]/ycell) + most_freq_in_lat)
 
      this[,a_type]  <- round(this[,a_type])  /(xcellkm * ycellkm) # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
 

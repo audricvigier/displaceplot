@@ -13,6 +13,8 @@ Imports:
     data.table,
 	maptools,
 	ggplot2
+Suggests:
+    vmstools
 Depends: R (>= 3.4.0)
 License: >GPL-2
 Encoding: UTF-8
