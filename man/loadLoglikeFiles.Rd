@@ -4,7 +4,7 @@
 \alias{loadLoglikeFiles}
 \title{Re-load outcome files of getAggLoglikeFiles() in the global env.}
 \usage{
-loadLoglikeFiles(general, use_port_info = FALSE)
+loadLoglikeFiles(general = general, use_port_info = FALSE)
 }
 \arguments{
 \item{fname}{First name}

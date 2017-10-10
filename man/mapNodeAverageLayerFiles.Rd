@@ -9,7 +9,7 @@ mapNodeAverageLayerFiles(general, a_type = "cumcatches",
   selected_scenarios_for_plot = general$namefolderoutputs,
   selected_scenarios_for_table = general$namefolderoutputs,
   selected_areas_for_table = c("22", "23", "24", "25", "IIIa", "IVa", "IVb",
-  "IVc"), the_break_baseline = c(0.5, 1, round(exp(seq(0.5, 14, by = 1.2))),
+  "IVc"), the_breaks_baseline = c(0.5, 1, round(exp(seq(0.5, 14, by = 1.2))),
   1e+06), gis_shape = list(), a_width = 3400, a_height = 3500,
   xlims = c(-1, 17), ylims = c(53, 60), xcell = 12, ycell = 17)
 }
@@ -77,7 +77,7 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                            selected_scenarios_for_plot=general$namefolderoutput,
                            selected_scenarios_for_table=general$namefolderoutput,
                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
-                           the_break_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000),
+                           the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000),
                            gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
