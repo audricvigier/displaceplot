@@ -50,7 +50,7 @@
 #'                                                        proj4string=CRS("+proj=longlat +ellps=WGS84"))
 #'   BSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
 #'                                                         'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub4_Mx_20LongTailedD_wgs84'), 
-#'                                                           proj4string=CRS("+proj=longlat #'+ellps=WGS84"))
+#'                                                           proj4string=CRS("+proj=longlat +ellps=WGS84"))
 #'   NSsub4mx5                   <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
 #'                                                          'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub4_mx05_wgs84'), 
 #'                                                            proj4string=CRS("+proj=longlat +ellps=WGS84"))
@@ -60,7 +60,7 @@
 #'
 #'
 #'
-#'   mapNodeAverageLayerFiles (general, a_type="cumcatches",   the_baseline= "svana_baseline",
+#'   mapNodeAverageLayerFiles (general, a_type="cumcatches",  field_pos=4,  the_baseline= "svana_baseline",
 #'                            selected_scenarios_for_plot=general$namefolderoutput,
 #'                            selected_scenarios_for_table=general$namefolderoutput,
 #'                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
@@ -70,8 +70,9 @@
 #'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
 #'                                           svana_sub4mx5ns20bt=   list(NSsub4mx5, BSsub4mx20),
 #'                                           svana_sub4mx20ns5bt=   list(NSsub4mx20, BSsub4mx5),
-#'                                           svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5),
-#'                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17
+#'                                           svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5)),
+#'                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
+#'                                           legend_text1="Total Catches kg per "
 #'                                           ))
 #' }
 
@@ -81,13 +82,14 @@
 
 
 
-mapNodeAverageLayerFiles <- function(general, a_type="cumcatches",  the_baseline= "svana_baseline",
+mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", field_pos=4, the_baseline= "svana_baseline",
                             selected_scenarios_for_plot=general$namefolderoutput,
                             selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
                             the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.2))), 1000000),
                             gis_shape=list(),
-                            a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17
+                            a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
+                            legend_text1="Total Catches kg per "
                             ){
 
 
@@ -171,7 +173,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
     this <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
                               paste("average_",a_type,"_layer.txt", sep='')), header=FALSE, skip = 1)
-     colnames(this) <- c("node","lat",  "long", a_type)
+    colnames(this) <- c("node","lat",  "long")
+    colnames(this) [field_pos] <- a_type
 
 
     this_for_gis <- this
@@ -255,9 +258,10 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     x = c(xlims[1]+0.2, xlims[1]+0.4, xlims[1]+0.4, xlims[1]+0.2)
     y = c(ylims[1]+0.5, ylims[1]+4, ylims[1]+4, ylims[1]+0.5)
     the_breaks_leg <-NULL
+      a_title <- substitute( expression(paste(legend_text1, km^2)), list(legend_text1=legend_text1))
       for(i in 1: length(the_breaks_baseline[-1])){ if(the_breaks_baseline[i]>1) {the_breaks_leg[i] <- round(the_breaks_baseline[i])} else{the_breaks_leg[i]<- the_breaks_baseline[i]}}
        legend.gradient2 (cbind(x = x , y = y ), cols=Satellite.Palette.baseline(length(the_breaks_baseline[-1])),
-         limits="", title=expression(paste("Total catches kg per ", km^2)),
+         limits="", title=eval(a_title),
          legend= the_breaks_leg,
          cex=1, col="black")
 

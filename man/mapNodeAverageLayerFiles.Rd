@@ -4,14 +4,15 @@
 \alias{mapNodeAverageLayerFiles}
 \title{Generate maps from averaging stochastic DISPLACE spatial layera}
 \usage{
-mapNodeAverageLayerFiles(general, a_type = "cumcatches",
+mapNodeAverageLayerFiles(general, a_type = "cumcatches", field_pos = 4,
   the_baseline = "svana_baseline",
   selected_scenarios_for_plot = general$namefolderoutput,
   selected_scenarios_for_table = general$namefolderoutput,
   selected_areas_for_table = c("22", "23", "24", "25", "IIIa", "IVa", "IVb",
   "IVc"), the_breaks_baseline = c(0.5, 1, round(exp(seq(0.5, 14, by = 1.2))),
   1e+06), gis_shape = list(), a_width = 3400, a_height = 3500,
-  xlims = c(-1, 17), ylims = c(53, 60), xcell = 12, ycell = 17)
+  xlims = c(-1, 17), ylims = c(53, 60), xcell = 12, ycell = 17,
+  legend_text1 = "Total Catches kg per ")
 }
 \arguments{
 \item{fname}{First name}
@@ -63,7 +64,7 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                                                        proj4string=CRS("+proj=longlat +ellps=WGS84"))
   BSsub4mx20                  <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
                                                         'DISPLACE_SVANAProject', 'Input for DISPLACE', 'BHT2_Sub4_Mx_20LongTailedD_wgs84'), 
-                                                          proj4string=CRS("+proj=longlat #'+ellps=WGS84"))
+                                                          proj4string=CRS("+proj=longlat +ellps=WGS84"))
   NSsub4mx5                   <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub',
                                                          'DISPLACE_SVANAProject', 'Input for DISPLACE', 'NST2_sub4_mx05_wgs84'), 
                                                            proj4string=CRS("+proj=longlat +ellps=WGS84"))
@@ -73,7 +74,7 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
 
 
 
-  mapNodeAverageLayerFiles (general, a_type="cumcatches",   the_baseline= "svana_baseline",
+  mapNodeAverageLayerFiles (general, a_type="cumcatches",  field_pos=4,  the_baseline= "svana_baseline",
                            selected_scenarios_for_plot=general$namefolderoutput,
                            selected_scenarios_for_table=general$namefolderoutput,
                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
@@ -83,8 +84,9 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
                                           svana_sub4mx5ns20bt=   list(NSsub4mx5, BSsub4mx20),
                                           svana_sub4mx20ns5bt=   list(NSsub4mx20, BSsub4mx5),
-                                          svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5),
-                                          a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17
+                                          svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5)),
+                                          a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
+                                          legend_text1="Total Catches kg per "
                                           ))
 }
 }
