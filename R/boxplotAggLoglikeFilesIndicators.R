@@ -69,7 +69,7 @@ boxplotAggLoglikeFilesIndicators <- function(general= general,
                                              sets=c("_selected_set1_", "_selected_set2_", "_selected_set3_")){
 
 
-
+aggmean <- list() ; aggmedian <- list()
 for (selected in sets){
 
  outcomes <- read.table(file.path(general$main.path, general$namefolderinput,
@@ -153,11 +153,12 @@ for (selected in sets){
  dev.off()
  }
 
+  aggmean[[selected]] <- tapply(outcomes$ratio_percent, list(outcomes$scenario, outcomes$variable), mean)
+  aggmedian[[selected]] <- tapply(outcomes$ratio_percent, list(outcomes$scenario, outcomes$variable), median)
+ 
+ 
  } # end FOR-loop over sets
 
-
- aggmean <- tapply(outcomes$ratio_percent, list(outcomes$scenario, outcomes$variable), mean)
- aggmedian <- tapply(outcomes$ratio_percent, list(outcomes$scenario, outcomes$variable), median)
  
  # useful to copy/paste into Excel!
  write.table(outcomes, "clipboard", sep="\t", row.names=TRUE)   # export to excel
