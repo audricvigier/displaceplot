@@ -29,6 +29,13 @@ library(help=displaceplot)
 ?mapNodeAverageLayerFiles
 ```
 
+Examples of output plots
+------------
++<p align="center">
++  <img src="figs/map_averaged_cumcatches.tiff?raw=true">
++</p>
+
+
 Dev.
 ------------
 For Windows, compile with
