@@ -249,6 +249,5 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
 return()
 }  
   
-    polygonPlotsFromAnnualIndicFiles (general=general, a_variable="Fbar",    the_baseline="svana_baseline", a_width=3500,  a_height=1000,selected_scenarios=general$namefolderoutput[1:3], explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),  is_individual_export=TRUE) 
  
   

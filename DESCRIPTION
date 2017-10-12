@@ -1,6 +1,6 @@
 Package: displaceplot
 Title: A suite of R routine to process DISPLACE simulation output files
-Version: 0.1
+Version: 0.2
 Author: Francois Bastardie
 Maintainer: Francois Bastardie <fba@aqua.dtu.dk>
 Description: DISPLACE simulation generates a lot of text-based output files
