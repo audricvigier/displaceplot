@@ -156,7 +156,13 @@ for (selected in sets){
  } # end FOR-loop over sets
 
 
- return()
+ aggmean <- tapply(outcomes$ratio_percent, list(outcomes$scenario, outcomes$variable), mean)
+ aggmedian <- tapply(outcomes$ratio_percent, list(outcomes$scenario, outcomes$variable), median)
+ 
+ # useful to copy/paste into Excel!
+ write.table(outcomes, "clipboard", sep="\t", row.names=TRUE)   # export to excel
+
+ return(list(outcomes=outcomes,  aggmean=aggmean,  aggmedian=aggmedian, message="Look also for graphics in the DISPLACE output folders"))
  }
 
 
