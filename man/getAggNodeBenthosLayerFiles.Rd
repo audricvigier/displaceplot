@@ -12,7 +12,8 @@ getAggNodeBenthosLayerFiles(general, a_tstep = "34321")
 \item{lname}{Last name}
 }
 \description{
-This function generates an average layer as a first step to generate maps from popnodes files
+This function generates an average layer as a first step to generate maps from popnodes files 
+Two different types of files are going to be written behind the scene i.e. one file storing the stack of all input files and keeping the sce dimension, the other doing the averaging per sce.
 }
 \examples{
 

@@ -4,6 +4,7 @@
 #' Produce an average spatial layer as first step to do a map 
 #'
 #' This function generates an average layer as a first step to generate maps from popnodes files 
+#' Two different types of files are going to be written behind the scene i.e. one file storing the stack of all input files and keeping the sce dimension, the other doing the averaging per sce.
 #'
 #' @param fname First name
 #' @param lname Last name
@@ -64,18 +65,8 @@ getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
             # fields in DISPLACE output file are: Func gr id/ tstep / node / long / lat / number this func group id /biomass this func group id/ 
             # mean weight this func group id / benthosbiomassoverK / benthosnumberoverK /benthos_tot_biomass_K this funcgr 
 
-            head( cumbenthos[cumbenthos$totbio!=0,])
-            
-            cumbenthos    <- cumbenthos[cumbenthos$tstep==a_tstep,] # e.g. if "34321" then cumul at 1st of Dec 4th year
-            cumbenthos    <- aggregate(list(cumbenthos$totbio, cumbenthos$totN, cumbenthos$meanweight), 
-                                           list(cumbenthos$idx_node,
-                                                cumbenthos$lat,
-                                                cumbenthos$long),
-                                       sum, na.rm=TRUE
-                                      )   # caution: the funcgr dim just vanished here.
-            names(cumbenthos) <- c("idx_node",'lat','long',"totbio", "totN", "meanweight")                                    
-            cumbenthos    <- cumbenthos[c("idx_node",'lat','long',"totbio", "totN", "meanweight")]
-            cumbenthos    <- cbind(cumbenthos, simu=sim)
+            cumbenthos    <- cumbenthos[c("idx_node",'lat','long','funcgr','tstep', "totbio", "totN", "meanweight")]
+            cumbenthos    <- cbind(cumbenthos, simu=sim, sce=sce)
             allcumbenthos <- rbind(allcumbenthos, cumbenthos)
          }, silent=TRUE)
 
@@ -85,7 +76,14 @@ getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
         }
 
        }
+     write.table(allcumbenthos, file=file.path(general$main.path, general$namefolderinput,
+                              paste("allcumbenthos_layers.txt", sep='')), row.names=FALSE, quote=FALSE)
 
+     
+     allcumbenthos    <- allcumbenthos[allcumbenthos$tstep==a_tstep,] # e.g. if "34321" then cumul at 1st of Dec 4th year
+     allcumbenthos    <- allcumbenthos[, !colnames(allcumbenthos) %in%  "tstep"]
+     
+     
      # CAUTION:
      # read graph coord and complete DISPLACE output files with all coords for image() to work properly
      coord <- read.table(file=file.path(paste(general$main.path.ibm,"_", general$case_study, sep=""), 
@@ -94,7 +92,7 @@ getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
      coord <- matrix(coord, ncol=3)
      colnames(coord) <- c('SI_LONG', 'SI_LATI', 'idx.port')
      # hereafter:
-     allcumbenthos <- rbind(allcumbenthos, data.frame(idx_node=0, lat=coord[,2], long=coord[,1], totbio=NA, totN=NA, meanweight=NA, simu="simu2")) 
+     allcumbenthos <- rbind(allcumbenthos, data.frame(idx_node=0, lat=coord[,2], long=coord[,1],  funcgr=NA, totbio=NA, totN=NA, meanweight=NA, simu="simu2", sce="fake")) 
 
 
 

@@ -3,7 +3,7 @@ Title: A suite of R routine to process DISPLACE simulation output files
 Version: 0.2
 Author: Francois Bastardie
 Maintainer: Francois Bastardie <fba@aqua.dtu.dk>
-Description: DISPLACE simulation generates a lot of text-based output files
+Description: A DISPLACE simulation generates a lot of text-based output files
     which need some post-processing to make the most out of them and 
 	plot the data correctly. We suggest here a suite of routines to treat them. 
     However this suite of routines is only a suggestion and 
