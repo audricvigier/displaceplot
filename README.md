@@ -31,6 +31,7 @@ library(help=displaceplot)
 
 Examples of output plots
 ------------
+
 <p align="center">
   <img src="figs/map_averaged_cumcatches.png?raw=true">
 </p>
