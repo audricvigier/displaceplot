@@ -44,14 +44,14 @@
 getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
 
 
-  for (sce in general$namefolderoutput){
+ for (sce in general$namefolderoutput){
 
 
 
  
 
 
-    ## catches-------------------------------
+    ## -------------------------------
     allcumbenthos <- NULL
 
 
@@ -65,7 +65,7 @@ getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
             # fields in DISPLACE output file are: Func gr id/ tstep / node / long / lat / number this func group id /biomass this func group id/ 
             # mean weight this func group id / benthosbiomassoverK / benthosnumberoverK /benthos_tot_biomass_K this funcgr 
 
-            cumbenthos    <- cumbenthos[c("idx_node",'lat','long','funcgr','tstep', "totbio", "totN", "meanweight")]
+            cumbenthos    <- cumbenthos[c("idx_node",'lat','long','funcgr','tstep', "totbio", "totN", "meanweight", "benthosbiomassK")]
             cumbenthos    <- cbind(cumbenthos, simu=sim, sce=sce)
             allcumbenthos <- rbind(allcumbenthos, cumbenthos)
          }, silent=TRUE)
@@ -76,13 +76,31 @@ getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
         }
 
        }
-     write.table(allcumbenthos, file=file.path(general$main.path, general$namefolderinput,
-                              paste("allcumbenthos_layers.txt", sep='')), row.names=FALSE, quote=FALSE)
+     
+     
+     # 1. ts
+     cumbenthos_totN_ts    <- tapply(as.numeric(as.character(allcumbenthos$totN)), 
+                              list(paste(allcumbenthos$tstep, allcumbenthos$funcgr, allcumbenthos$sim, allcumbenthos$sce)), sum, na.rm=TRUE) # sum over nodes
+     cumbenthos_totbio_ts     <- tapply(as.numeric(as.character(allcumbenthos$totbio)), 
+                              list(paste(allcumbenthos$tstep, allcumbenthos$funcgr, allcumbenthos$sim, allcumbenthos$sce)), sum, na.rm=TRUE) # sum over nodes
+     cumbenthos_meanweight_ts <- tapply(as.numeric(as.character(allcumbenthos$meanweight)),
+                              list(paste(allcumbenthos$tstep, allcumbenthos$funcgr, allcumbenthos$sim, allcumbenthos$sce)), mean, na.rm=TRUE) # mean over nodes
+     cumbenthos_biomassK_ts <- tapply(as.numeric(as.character(allcumbenthos$benthosbiomassK)),
+                              list(paste(allcumbenthos$tstep, allcumbenthos$funcgr, allcumbenthos$sim, allcumbenthos$sce)), sum, na.rm=TRUE) # sum over nodes
+     cumbenthos_tot_ts <- cbind.data.frame(tstep=names(cumbenthos_totN_ts),
+                                       avcumbenthosN=cumbenthos_totN_ts, 
+                                       avcumbenthosbio=cumbenthos_totbio_ts,
+                                       avcumbenthosmeanweight=cumbenthos_meanweight_ts,
+                                       avcumbenthosbiomassK=cumbenthos_biomassK_ts)
+     colnames(cumbenthos_tot_ts) <- c("tstep funcgr sim sce", "totN", "tobio", "meanweight", "biomassK")
+    
+     write.table(cumbenthos_tot_ts, file=file.path(general$main.path, general$namefolderinput,  sce,
+                              paste("allcumbenthos_ts.txt", sep='')), row.names=FALSE, quote=FALSE)
 
      
-     allcumbenthos    <- allcumbenthos[allcumbenthos$tstep==a_tstep,] # e.g. if "34321" then cumul at 1st of Dec 4th year
-     allcumbenthos    <- allcumbenthos[, !colnames(allcumbenthos) %in%  "tstep"]
-     
+     # 2. spatial layer
+     allcumbenthos    <- allcumbenthos[allcumbenthos$tstep=="34321",] # e.g. if "34321" then cumul at 1st of Dec 4th year
+     allcumbenthos    <- allcumbenthos[, !colnames(allcumbenthos) %in% "tstep"]
      
      # CAUTION:
      # read graph coord and complete DISPLACE output files with all coords for image() to work properly
@@ -92,7 +110,7 @@ getAggNodeBenthosLayerFiles <- function(general,  a_tstep="34321"){
      coord <- matrix(coord, ncol=3)
      colnames(coord) <- c('SI_LONG', 'SI_LATI', 'idx.port')
      # hereafter:
-     allcumbenthos <- rbind(allcumbenthos, data.frame(idx_node=0, lat=coord[,2], long=coord[,1],  funcgr=NA, totbio=NA, totN=NA, meanweight=NA, simu="simu2", sce="fake")) 
+     allcumbenthos <- rbind(allcumbenthos, data.frame(idx_node=0, lat=coord[,2], long=coord[,1],  funcgr=NA, totbio=NA, totN=NA, meanweight=NA, benthosbiomassK=NA, simu="simu2", sce="fake")) 
 
 
 
