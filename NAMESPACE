@@ -3,6 +3,7 @@
 export(boxplotAggLoglikeFilesIndicators)
 export(callCompareSimSimPlots)
 export(comparePieplotStressPerPort)
+export(compareSimSimIndividualVidCumTraj)
 export(compareSimSimPlots)
 export(expressAggLoglikeFilesIndicatorsRelativeToBaselineSce)
 export(getAggLoglikeFiles)
