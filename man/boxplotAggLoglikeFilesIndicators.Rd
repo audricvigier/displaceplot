@@ -2,7 +2,7 @@
 % Please edit documentation in R/boxplotAggLoglikeFilesIndicators.R
 \name{boxplotAggLoglikeFilesIndicators}
 \alias{boxplotAggLoglikeFilesIndicators}
-\title{Reloading the files produced by getAggLoglikeFiles() in the global environment}
+\title{Make a boxplot for fisheries indicators from previous aggregations}
 \usage{
 boxplotAggLoglikeFilesIndicators(general = general,
   the_baseline = "svana_baseline",
@@ -15,7 +15,7 @@ boxplotAggLoglikeFilesIndicators(general = general,
 \item{lname}{Last name}
 }
 \description{
-This function re-load the files produced by getAggLoglikeFiles()
+This function makes a box-and-whiskers plot out of aggregation on indicator variables
 }
 \examples{
 

@@ -1,8 +1,8 @@
 
 
-#' Reloading the files produced by getAggLoglikeFiles() in the global environment
+#' Make a boxplot for fisheries indicators from previous aggregations
 #'
-#' This function re-load the files produced by getAggLoglikeFiles()
+#' This function makes a box-and-whiskers plot out of aggregation on indicator variables
 #'
 #' @param fname First name
 #' @param lname Last name
