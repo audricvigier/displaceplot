@@ -31,7 +31,7 @@
 #'
 #'   # caution: could take a  while...
 #'   getAggNodeLayerFiles (general, a_type="cumcatches", a_tstep="34321")
-#'
+#'   getAggNodeLayerFiles (general, a_type="cumsweptarea", a_tstep="34321")
 #'
 #'   library(maptools)
 #'   sh_coastlines               <- readShapePoly(file.path('C:','Users','fbas','Documents','GitHub','DISPLACE_input_myfish','graphsspe', 'shp', 'francois_EU'), 
@@ -60,7 +60,7 @@
 #'
 #'
 #'
-#'   mapNodeAverageLayerFiles (general, a_type="cumcatches",  field_pos=4,  the_baseline= "svana_baseline",
+#'   mapNodeAverageLayerFiles (general, a_type="cumcatches", a_type2="",  field_pos=4,  the_baseline= "svana_baseline",
 #'                            selected_scenarios_for_plot=general$namefolderoutput,
 #'                            selected_scenarios_for_table=general$namefolderoutput,
 #'                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
@@ -73,7 +73,23 @@
 #'                                           svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5)),
 #'                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
 #'                                           legend_text1="Total Catches kg per "
-#'                                           ))
+#'                                           )
+#'
+#'
+#'   mapNodeAverageLayerFiles (general, a_type="cumcatches", a_type2="cumsweptarea",  field_pos=4,  the_baseline= "svana_baseline",
+#'                            selected_scenarios_for_plot=general$namefolderoutput,
+#'                            selected_scenarios_for_table=general$namefolderoutput,
+#'                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
+#'                            the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000),
+#'                            gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
+#'                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
+#'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
+#'                                           svana_sub4mx5ns20bt=   list(NSsub4mx5, BSsub4mx20),
+#'                                           svana_sub4mx20ns5bt=   list(NSsub4mx20, BSsub4mx5),
+#'                                           svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5)),
+#'                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
+#'                                           legend_text1="Total Catches kg per Swept Area km2 per "
+#'                                           )
 #' }
 
 
@@ -82,7 +98,7 @@
 
 
 
-mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", field_pos=4, the_baseline= "svana_baseline",
+mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", a_type2="", field_pos=4, the_baseline= "svana_baseline",
                             selected_scenarios_for_plot=general$namefolderoutput,
                             selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
@@ -148,8 +164,9 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
 
-    namefile  <- file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",a_type,"_selected.tiff") )
-    namefile2 <- file.path(general$main.path, general$namefolderinput, paste0("table_",a_type,".txt") )
+    if(a_type2!="") nametype <- paste0(a_type,"over",a_type2) else nametype <- a_type
+    namefile  <- file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_selected.tiff") )
+    namefile2 <- file.path(general$main.path, general$namefolderinput, paste0("table_",nametype,".txt") )
 
 
     tiff(filename=namefile,   width = a_width, height = a_height,
@@ -175,12 +192,24 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
                               paste("average_",a_type,"_layer.txt", sep='')), header=FALSE, skip = 1)
     colnames(this) <- c("node","lat",  "long")
     colnames(this) [field_pos] <- a_type
+    nametype <- a_type
 
+    if(a_type2!=""){
+       this2 <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
+                              paste("average_",a_type2,"_layer.txt", sep='')), header=FALSE, skip = 1)
+       colnames(this2) <- c("node","lat",  "long")
+       colnames(this2) [field_pos] <- a_type2
+
+       this <- merge(this, this2)
+       this[,paste0(a_type,"over",a_type2)] <- this [,a_type]/this [,a_type2]  # assuming a ratio
+       nametype <- paste0(a_type,"over",a_type2) # rename
+    }
+    
 
     this_for_gis <- this
     this_for_gis[,4] <- ceiling(this_for_gis[,4]) # because weird bug when importing XY data in GIS if not an integer!!!
     write.table(this_for_gis, file=file.path(general$main.path, general$namefolderinput, sce,
-                              paste("average_",a_type,"_layer_",sce,".txt", sep='')), col.names=TRUE, row.names=FALSE)
+                              paste("average_",nametype,"_layer_",sce,".txt", sep='')), col.names=TRUE, row.names=FALSE)
 
 
      # get an idea per area
@@ -198,7 +227,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
            warning("No area code found here. Try to install vmstools if within ICES area and re-run, otherwise add an area field by hand to the input file", call. = FALSE)
         }
      }
-     table_obj[sce, ] <-  tapply(this [, a_type], this$area, sum, na.rm=TRUE)[colnames(table_obj)]
+     table_obj[sce, ] <-  tapply(this [, nametype], this$area, sum, na.rm=TRUE)[colnames(table_obj)]
      
 
 
@@ -214,20 +243,20 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      xcellkm <- distance(this$round_long[1]/xcell, mean(this$round_lat)/ycell, (this$round_long[1]/xcell) + most_freq_in_long, mean(this$round_lat)/ycell)
      ycellkm <- distance(mean(this$round_long)/xcell, this$round_lat[2]/ycell , mean(this$round_long)/xcell, (this$round_lat[2]/ycell) + most_freq_in_lat)
 
-     this[,a_type]  <- round(this[,a_type])  /(xcellkm * ycellkm) # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
+     this[,nametype]  <- round(this[,nametype])  /(xcellkm * ycellkm) # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
 
      this$cell_id <-  paste(this$round_long, this$round_lat, sep="_")
      if(sce == the_baseline) {
         the_baseline_layer <- this
-        the_baseline_layer <- aggregate(the_baseline_layer[,a_type],
+        the_baseline_layer <- aggregate(the_baseline_layer[,nametype],
                                 list(the_baseline_layer$round_long, the_baseline_layer$round_lat, the_baseline_layer$cell_id), sum, na.rm=TRUE)
-        colnames(the_baseline_layer) <- c("round_long", "round_lat", "cell_id", a_type)
+        colnames(the_baseline_layer) <- c("round_long", "round_lat", "cell_id", nametype)
 
 
        Satellite.Palette.baseline <-colorRampPalette(c("cyan","aquamarine","orange","red"))
        #the_breaks_baseline <-   c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000)
 
-       the_points <- tapply(the_baseline_layer[,a_type],
+       the_points <- tapply(the_baseline_layer[,nametype],
                   list(the_baseline_layer$round_lat, the_baseline_layer$round_long), sum, na.rm=TRUE)
 
        the_points <- replace (the_points, the_points>the_breaks_baseline[length(the_breaks_baseline)], the_breaks_baseline[length(the_breaks_baseline)])
@@ -270,27 +299,27 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
 
-      this <- aggregate(this[,a_type], list(this$round_long, this$round_lat, this$cell_id), sum, na.rm=TRUE)
-      colnames(this) <- c("round_long", "round_lat", "cell_id", a_type)
+      this <- aggregate(this[,nametype], list(this$round_long, this$round_lat, this$cell_id), sum, na.rm=TRUE)
+      colnames(this) <- c("round_long", "round_lat", "cell_id", nametype)
 
       # Merge!
       this           <- merge(the_baseline_layer, this, by.x="cell_id", by.y="cell_id")
-      this[,a_type]  <- (100* as.numeric(as.character(this[,paste0(a_type,".y")])) / as.numeric(as.character(this[,paste0(a_type,".x")])) )  -100
+      this[,nametype]  <- (100* as.numeric(as.character(this[,paste0(nametype,".y")])) / as.numeric(as.character(this[,paste0(nametype,".x")])) )  -100
 
           # CAUTION!!!!: correct for area with low absolute value to avoid visual effect
-      this[,a_type] [ this[,paste0(a_type,".x")] <quantile(this[,paste0(a_type,".x")] [ this[,paste0(a_type,".x")] !=0], prob=0.05)]  <- 0
+      this[,nametype] [ this[,paste0(nametype,".x")] <quantile(this[,paste0(nametype,".x")] [ this[,paste0(nametype,".x")] !=0], prob=0.05)]  <- 0
 
 
 
 
     in_relative <- TRUE
     if(in_relative){
-        the_points <- tapply( this[,a_type],
+        the_points <- tapply( this[,nametype],
                   list(this$round_lat.y, this$round_long.y), sum)
         Satellite.Palette <-colorRampPalette(c("cyan","aquamarine","white","yellow","red"))
         the_breaks <-  c(rev(-round(exp(seq(0, 7, by=1)))),  0, round(exp(seq(0, 7, by=1))))
         } else{
-        the_points <- tapply(this[,paste0(a_type,".y")],
+        the_points <- tapply(this[,paste0(nametype,".y")],
                   list(this$round_lat.y, this$round_long.y), sum)
         the_breaks <-  the_breaks_baseline
         Satellite.Palette <- Satellite.Palette.baseline
