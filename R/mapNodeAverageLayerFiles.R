@@ -90,6 +90,22 @@
 #'                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
 #'                                           legend_text1="Total Catches kg per Swept Area km2 per "
 #'                                           )
+#'
+#'
+#'   mapNodeAverageLayerFiles (general, a_type="cumdiscards",  a_type2="cumcatches", func="rate", field_pos=4,  the_baseline= "svana_baseline",
+#'                           selected_scenarios_for_plot=general$namefolderoutput,
+#'                           selected_scenarios_for_table=general$namefolderoutput,
+#'                           selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
+#'                           the_breaks_baseline= c(round((exp(seq(0.00, 0.6, by=0.04))-1),3), 1.1),
+#'                           gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
+#'                                          svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
+#'                                          svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
+#'                                          svana_sub4mx5ns20bt=   list(NSsub4mx5, BSsub4mx20),
+#'                                          svana_sub4mx20ns5bt=   list(NSsub4mx20, BSsub4mx5),
+#'                                          svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5)),
+#'                                          a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
+#'                                          legend_text1="Discarded proportion"
+#'                                          )
 #' }
 
 
@@ -98,7 +114,8 @@
 
 
 
-mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", a_type2="", field_pos=4, the_baseline= "svana_baseline",
+mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", a_type2="", func="ratio",    # or func="rate",
+                            field_pos=4, the_baseline= "svana_baseline",
                             selected_scenarios_for_plot=general$namefolderoutput,
                             selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
@@ -194,18 +211,30 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     colnames(this) [field_pos] <- a_type
     nametype <- a_type
 
+    # filter out close to 0 values
+    this[,a_type]  <- replace(this[,a_type], this[,a_type]<1e-1, 0)
+   
     if(a_type2!=""){
+       this  <- replace(this, is.na(this), 0)
+       this[,a_type]  <- replace(this[,a_type], is.infinite(this[,a_type]), 0)
        this2 <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
                               paste("average_",a_type2,"_layer.txt", sep='')), header=FALSE, skip = 1)
        colnames(this2) <- c("node","lat",  "long")
        colnames(this2) [field_pos] <- a_type2
-
+       this2  <- replace(this2, is.na(this2), 0)
+       this2[,a_type2]  <- replace(this2[,a_type2], is.infinite(this2[,a_type2]), 0)
+   
+       # filter out close to 0 values
+       this2[,a_type2] <- replace(this2[,a_type2], this2[,a_type2]<1e-1, 0)
+     
        this <- merge(this, this2)
-       this[,paste0(a_type,"over",a_type2)] <- this [,a_type]/this [,a_type2]  # assuming a ratio
+       if(func=="ratio") this[,paste0(a_type,"over",a_type2)] <- this [,a_type]/this [,a_type2]  # assuming a ratio
+       if(func=="rate") this[,paste0(a_type,"over",a_type2)] <- (this [,a_type])/(this [,a_type]+this [,a_type2])  # assuming a rate
        nametype <- paste0(a_type,"over",a_type2) # rename
     }
     
-
+    
+ 
     this_for_gis <- this
     this_for_gis[,4] <- ceiling(this_for_gis[,4]) # because weird bug when importing XY data in GIS if not an integer!!!
     write.table(this_for_gis, file=file.path(general$main.path, general$namefolderinput, sce,
@@ -243,7 +272,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      xcellkm <- distance(this$round_long[1]/xcell, mean(this$round_lat)/ycell, (this$round_long[1]/xcell) + most_freq_in_long, mean(this$round_lat)/ycell)
      ycellkm <- distance(mean(this$round_long)/xcell, this$round_lat[2]/ycell , mean(this$round_long)/xcell, (this$round_lat[2]/ycell) + most_freq_in_lat)
 
-     this[,nametype]  <- round(this[,nametype])  /(xcellkm * ycellkm) # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
+     if(func!="rate") this[,nametype]  <- round(this[,nametype])  /(xcellkm * ycellkm) # (5.576564*6.540486)  # if 15 and 20 then divide by cell area 8.925*5.561km  check??
 
      this$cell_id <-  paste(this$round_long, this$round_lat, sep="_")
      if(sce == the_baseline) {
@@ -271,7 +300,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
         xlab="",
         ylab="",
         axes=FALSE,
-        xlim=xlims, ylim=ylims    # balticonly
+        xlim=xlims, ylim=ylims    
         )
        library(maps)
        if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
@@ -287,7 +316,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     x = c(xlims[1]+0.2, xlims[1]+0.4, xlims[1]+0.4, xlims[1]+0.2)
     y = c(ylims[1]+0.5, ylims[1]+4, ylims[1]+4, ylims[1]+0.5)
     the_breaks_leg <-NULL
-      a_title <- substitute( expression(paste(legend_text1, km^2)), list(legend_text1=legend_text1))
+    a_title <- substitute( expression(paste(legend_text1, km^2)), list(legend_text1=legend_text1))
+    if(func=="rate") a_title <- legend_text1  # overwrite
       for(i in 1: length(the_breaks_baseline[-1])){ if(the_breaks_baseline[i]>1) {the_breaks_leg[i] <- round(the_breaks_baseline[i])} else{the_breaks_leg[i]<- the_breaks_baseline[i]}}
        legend.gradient2 (cbind(x = x , y = y ), cols=Satellite.Palette.baseline(length(the_breaks_baseline[-1])),
          limits="", title=eval(a_title),
@@ -304,12 +334,17 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
       # Merge!
       this           <- merge(the_baseline_layer, this, by.x="cell_id", by.y="cell_id")
+     
+      # filter for close to 0 values
+      this[,paste0(nametype,".x")] <- replace(this[,paste0(nametype,".x")], this[,paste0(nametype,".x")]<1e-1, 0)
+      this[,paste0(nametype,".y")] <- replace(this[,paste0(nametype,".y")], this[,paste0(nametype,".y")]<1e-1, 0)
+     
+      # percent
       this[,nametype]  <- (100* as.numeric(as.character(this[,paste0(nametype,".y")])) / as.numeric(as.character(this[,paste0(nametype,".x")])) )  -100
 
-          # CAUTION!!!!: correct for area with low absolute value to avoid visual effect
+ 
+      # CAUTION!!!!: correct for area with low absolute value to avoid visual effect
       this[,nametype] [ this[,paste0(nametype,".x")] <quantile(this[,paste0(nametype,".x")] [ this[,paste0(nametype,".x")] !=0], prob=0.05)]  <- 0
-
-
 
 
     in_relative <- TRUE

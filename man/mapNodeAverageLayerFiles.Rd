@@ -5,7 +5,7 @@
 \title{Generate maps from averaging stochastic DISPLACE spatial layera}
 \usage{
 mapNodeAverageLayerFiles(general, a_type = "cumcatches", a_type2 = "",
-  field_pos = 4, the_baseline = "svana_baseline",
+  func = "ratio", field_pos = 4, the_baseline = "svana_baseline",
   selected_scenarios_for_plot = general$namefolderoutput,
   selected_scenarios_for_table = general$namefolderoutput,
   selected_areas_for_table = c("22", "23", "24", "25", "IIIa", "IVa", "IVb",
@@ -104,5 +104,21 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
                                           a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
                                           legend_text1="Total Catches kg per Swept Area km2 per "
                                           )
+
+
+mapNodeAverageLayerFiles (general, a_type="cumdiscards",  a_type2="cumcatches", func="rate", field_pos=4,  the_baseline= "svana_baseline",
+                          selected_scenarios_for_plot=general$namefolderoutput,
+                          selected_scenarios_for_table=general$namefolderoutput,
+                          selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
+                          the_breaks_baseline= c(round((exp(seq(0.00, 0.6, by=0.04))-1),3), 1.1),
+                          gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
+                                         svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
+                                         svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
+                                         svana_sub4mx5ns20bt=   list(NSsub4mx5, BSsub4mx20),
+                                         svana_sub4mx20ns5bt=   list(NSsub4mx20, BSsub4mx5),
+                                         svana_sub4mx5ns5bt=    list(NSsub4mx5, BSsub4mx5)),
+                                         a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
+                                         legend_text1="Discarded proportion"
+                                         )
 }
 }
