@@ -65,6 +65,7 @@
 #'                            selected_scenarios_for_table=general$namefolderoutput,
 #'                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
 #'                            the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000),
+#'                            the_breaks=c(rev(-round(exp(seq(0, 7, by=1)))),  0, round(exp(seq(0, 7, by=1)))),
 #'                            gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
 #'                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
 #'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
@@ -81,6 +82,7 @@
 #'                            selected_scenarios_for_table=general$namefolderoutput,
 #'                            selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
 #'                            the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000),
+#'                           the_breaks=c(rev(-round(exp(seq(0, 7, by=1)))),  0, round(exp(seq(0, 7, by=1)))),
 #'                            gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
 #'                                           svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
 #'                                           svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
@@ -97,6 +99,7 @@
 #'                           selected_scenarios_for_table=general$namefolderoutput,
 #'                           selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
 #'                           the_breaks_baseline= c(round((exp(seq(0.00, 0.6, by=0.04))-1),3), 1.1),
+#'                           the_breaks=c(rev(-round(exp(seq(0, 7, by=1)))),  0, round(exp(seq(0, 7, by=1)))),
 #'                           gis_shape=list(svana_baseline=   list(sh_coastlines), # ices_areas),
 #'                                          svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
 #'                                          svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20),
@@ -120,6 +123,7 @@ mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", a_type2="", f
                             selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
                             the_breaks_baseline= c(0.5, 1, round(exp(seq(0.5, 14, by=1.2))), 1000000),
+                            the_breaks=c(rev(-round(exp(seq(0, 7, by=1)))),  0, round(exp(seq(0, 7, by=1)))),
                             gis_shape=list(),
                             a_width= 3400, a_height =3500, xlims =  c(-1, 17), ylims = c(53,60), xcell=12, ycell=17,
                             legend_text1="Total Catches kg per "
@@ -170,6 +174,22 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 }
 
 
+# export raster file for GIS engine
+ exportGTiff <- function(
+                           rst,
+                           namefile_gtiff= file.path(general$main.path, general$namefolderinput, namefile, paste0("map_averaged_",nametype,"_", plotid)),
+                           CRS="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+                            ) {
+           require(raster) 
+           crs(rst) <- "+proj=longlat +datum=WGS84"                
+           rstr_proj       <- projectRaster(rst, crs=CRS)  # e.g. European EEA projection
+           rstr_proj[is.na(rstr_proj)] <- -999  # arbitrary code, to get rid of true 0s in GIS
+           rstr_proj[rstr_proj<0.001]  <- -999
+           writeRaster(rstr_proj, namefile_gtiff, format = "GTiff", overwrite=TRUE)
+  return()
+  }
+
+
 
    library(maptools)
 
@@ -186,6 +206,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     namefile2 <- file.path(general$main.path, general$namefolderinput, paste0("table_",nametype,".txt") )
 
 
+    plotid <- 0
     tiff(filename=namefile,   width = a_width, height = a_height,
                                    units = "px", pointsize = 12,  res=300, compression = c("lzw"))
 
@@ -193,7 +214,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     if(length(selected_scenarios_for_plot)==5) m <- rbind(c(1, 1), c(1, 1),c(2, 3), c(4, 5))
     if(length(selected_scenarios_for_plot)==7) m <- rbind(c(1, 1), c(1, 1),c(2, 3), c(4, 5),  c(6, 7))
     if(length(selected_scenarios_for_plot)==2) m <- rbind(c(1, 2))
-    if(length(selected_scenarios_for_plot)==4) m <- rbind(c(1, 2), c(2,3))
+    if(length(selected_scenarios_for_plot)==4) m <- rbind(c(1, 2), c(3,4))
     if(length(selected_scenarios_for_plot)==6) m <- rbind(c(1, 2) ,c(3, 4), c(5, 6))
     layout(m)
     par(mar=c(2,2,3,1))
@@ -204,7 +225,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
    for(sce in   selected_scenarios_for_table)
      {
 
-
+     plotid <- plotid +1
+ 
     this <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
                               paste("average_",a_type,"_layer.txt", sep='')), header=FALSE, skip = 1)
     colnames(this) <- c("node","lat",  "long")
@@ -290,7 +312,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
        the_points <- replace (the_points, the_points>the_breaks_baseline[length(the_breaks_baseline)], the_breaks_baseline[length(the_breaks_baseline)])
 
-       image(
+      image(
         x=as.numeric(as.character(colnames(the_points)))/xcell,     # 8.925km  at 53 degree N
         y=as.numeric(as.character(rownames(the_points)))/ycell,     # 5.561km at 53 degree N
         z= t(the_points),  # convert in tons
@@ -305,6 +327,17 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
        library(maps)
        if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
        #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
+
+     xrange <- range(the_baseline_layer$round_long/xcell)
+     yrange <- range(the_baseline_layer$round_lat/ycell)
+     r           <- raster(xmn=xrange[1], xmx=xrange[2], ymn=yrange[1], ymx=yrange[2], res=c(abs(most_freq_in_long), abs(most_freq_in_lat)), crs=CRS("+proj=longlat +datum=WGS84"))
+     some_coords <- SpatialPoints(cbind(lon=the_baseline_layer$round_long/xcell, lat=the_baseline_layer$round_lat/ycell))
+     rstr        <- rasterize(x=some_coords, y=r, field=the_baseline_layer[,nametype], fun="sum") 
+     exportGTiff(
+                   rstr, 
+                   file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
+                   "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+                   )
 
 
        box()
@@ -352,7 +385,6 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
         the_points <- tapply( this[,nametype],
                   list(this$round_lat.y, this$round_long.y), sum)
         Satellite.Palette <-colorRampPalette(c("cyan","aquamarine","white","yellow","red"))
-        the_breaks <-  c(rev(-round(exp(seq(0, 7, by=1)))),  0, round(exp(seq(0, 7, by=1))))
         } else{
         the_points <- tapply(this[,paste0(nametype,".y")],
                   list(this$round_lat.y, this$round_long.y), sum)
@@ -387,6 +419,18 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
 
 
+     #xrange <- range(this$round_long.y/xcell)
+     #yrange <- range(this$round_lat.y/ycell)
+     r           <- raster(xmn=xrange[1], xmx=xrange[2], ymn=yrange[1], ymx=yrange[2], res=c(abs(most_freq_in_long), abs(most_freq_in_lat)), crs=CRS("+proj=longlat +datum=WGS84"))
+     some_coords <- SpatialPoints(cbind(lon=this$round_long.x/xcell, lat=this$round_lat.y/ycell))
+     rstr        <- rasterize(x=some_coords, y=r, field=this[,nametype], fun="sum") 
+     exportGTiff(
+                   rstr, 
+                   file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
+                   "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+                   )
+
+
     box()
     mtext(side=3, sce, cex=1.2, line=0.5)
     axis(1, cex.axis=1.2)
@@ -396,7 +440,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     x = c(xlims[1]+0.2, xlims[1]+0.4, xlims[1]+0.4, xlims[1]+0.2)
     y = c(ylims[1]+0.5, ylims[1]+4, ylims[1]+4, ylims[1]+0.5)
     the_breaks_leg <-NULL
-    for(i in 1: length(the_breaks[-1])){ if(the_breaks[i]>1) {the_breaks_leg[i] <- round(the_breaks[i])} else{the_breaks_leg[i]<- the_breaks[i]}}
+    #for(i in 1: length(the_breaks[-1])){ if(the_breaks[i]>1) {the_breaks_leg[i] <- round(the_breaks[i])} else{the_breaks_leg[i]<- the_breaks[i]}}
+    the_breaks_leg <- the_breaks
     legend.gradient2 (cbind(x = x , y = y ), cols=Satellite.Palette(length(the_breaks[-1])),
     limits="", title=expression(paste("% difference per cell")),
     legend= the_breaks_leg,
