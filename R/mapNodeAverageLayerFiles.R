@@ -176,15 +176,15 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 # export raster file for GIS engine
  exportGTiff <- function(
-                           rst,
+                           a_raster=rst,
                            namefile_gtiff= file.path(general$main.path, general$namefolderinput, namefile, paste0("map_averaged_",nametype,"_", plotid)),
-                           CRS="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+                           a_crs="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
                             ) {
            require(raster) 
-           crs(rst) <- "+proj=longlat +datum=WGS84"                
-           rstr_proj       <- projectRaster(rst, crs=CRS)  # e.g. European EEA projection
+           crs(a_raster) <- "+proj=longlat +datum=WGS84"                
+           rstr_proj       <- projectRaster(a_raster, crs=a_crs)  # e.g. European EEA projection
            rstr_proj[is.na(rstr_proj)] <- -999  # arbitrary code, to get rid of true 0s in GIS
-           rstr_proj[rstr_proj<0.001]  <- -999
+           #rstr_proj[rstr_proj<0.001]  <- -999
            writeRaster(rstr_proj, namefile_gtiff, format = "GTiff", overwrite=TRUE)
   return()
   }
@@ -307,10 +307,14 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
        Satellite.Palette.baseline <-colorRampPalette(c("cyan","aquamarine","orange","red"))
        #the_breaks_baseline <-   c(0.5, 1, round(exp(seq(0.5, 14, by=1.1))), 1000000)
 
+       the_baseline_layer[,nametype] <- replace (the_baseline_layer[,nametype], 
+                                                 the_baseline_layer[,nametype]>the_breaks_baseline[length(the_breaks_baseline)], 
+                                                 the_breaks_baseline[length(the_breaks_baseline)])
+       
        the_points <- tapply(the_baseline_layer[,nametype],
                   list(the_baseline_layer$round_lat, the_baseline_layer$round_long), sum, na.rm=TRUE)
 
-       the_points <- replace (the_points, the_points>the_breaks_baseline[length(the_breaks_baseline)], the_breaks_baseline[length(the_breaks_baseline)])
+       #the_points <- replace (the_points, the_points>the_breaks_baseline[length(the_breaks_baseline)], the_breaks_baseline[length(the_breaks_baseline)])
 
       image(
         x=as.numeric(as.character(colnames(the_points)))/xcell,     # 8.925km  at 53 degree N
@@ -333,17 +337,57 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      r           <- raster(xmn=xrange[1], xmx=xrange[2], ymn=yrange[1], ymx=yrange[2], res=c(abs(most_freq_in_long), abs(most_freq_in_lat)), crs=CRS("+proj=longlat +datum=WGS84"))
      some_coords <- SpatialPoints(cbind(lon=the_baseline_layer$round_long/xcell, lat=the_baseline_layer$round_lat/ycell))
      rstr        <- rasterize(x=some_coords, y=r, field=the_baseline_layer[,nametype], fun="sum") 
-     exportGTiff(
-                   rstr, 
-                   file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
-                   "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
-                   )
-
-
-       box()
-       mtext(side=3, sce, cex=1.2, line=0.5)
-       axis(1, cex.axis=1.2)
-       axis(2, las=2, cex.axis=1.2)
+     #plot(rstr, breaks=the_breaks_baseline, col =  Satellite.Palette.baseline(length(the_breaks_baseline[-1])) )
+    
+     
+ #    exportGTiff(
+ #                  a_raster= rstr, 
+ #                  namefile_gtiff= file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
+ #                  a_crs="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+ #                  )
+ 
+ # replace by: force shape classification
+ require(raster) 
+           crs(rstr) <- "+proj=longlat +datum=WGS84"                
+           a_crs="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+           rstr_proj       <- projectRaster(rstr, crs=a_crs)  # e.g. European EEA projection
+           rstr_proj[is.na(rstr_proj)] <- -999  # arbitrary code, to get rid of true 0s in GIS
+           #rstr_proj[rstr_proj<0.001]  <- -999
+       rstr_proj[rstr_proj< the_breaks_baseline[1]] <- the_breaks_baseline[1]
+     for(int in 1: length(the_breaks_baseline[-1])) {
+            rstr_proj[rstr_proj>the_breaks_baseline[int] & rstr_proj<the_breaks_baseline[int+1]]  <- the_breaks_baseline[int+1]
+     }
+      namefile_gtiff= file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce))
+      writeRaster(rstr_proj, namefile_gtiff, format = "GTiff", overwrite=TRUE)
+ 
+  
+ 
+ # make a shape with symbology?  
+ # addColorTable <- function(inRstName, outRstName, rat.df){
+ #      library(rgdal)
+ #      r<- readGDAL(inRstName)
+ #      rat.df$color<- as.character(rat.df$color)
+ #      rat.df$attribute<- as.character(rat.df$attribute)
+ #      outRst <- writeGDAL(r, outRstName, type="Byte", 
+ #      colorTable=list(rat.df$color), 
+ #      catNames=list(rat.df$attribute), mvFlag=11L)
+ #      return(raster(outRst))
+ #    }
+ #    # This defines the values, the color and the attribute
+ #  valT <- the_breaks_baseline 
+ #  colT <-  Satellite.Palette.baseline(length(the_breaks_baseline))
+ #  attT <- the_breaks_baseline 
+ #  rat.df <- data.frame(value=valT,color=colT,attribute=attT)
+ #
+ #  # apply the magic function
+ #  rnew <- addColorTable(inRstName=file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce, ".tif")), 
+ #                       outRstName=file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce, "_sym.tif")),
+ #                            rat.df)
+  
+    box()
+    mtext(side=3, sce, cex=1.2, line=0.5)
+    axis(1, cex.axis=1.2)
+    axis(2, las=2, cex.axis=1.2)
 
 
     x = c(xlims[1]+0.2, xlims[1]+0.4, xlims[1]+0.4, xlims[1]+0.2)
@@ -425,10 +469,11 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      some_coords <- SpatialPoints(cbind(lon=this$round_long.x/xcell, lat=this$round_lat.y/ycell))
      rstr        <- rasterize(x=some_coords, y=r, field=this[,nametype], fun="sum") 
      exportGTiff(
-                   rstr, 
-                   file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
-                   "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
+                   a_raster= rstr, 
+                   namefile_gtiff= file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
+                    a_crs="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
                    )
+
 
 
     box()
