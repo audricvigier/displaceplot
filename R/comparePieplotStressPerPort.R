@@ -214,6 +214,8 @@ comparePieplotStressPerPort <- function(general,
 
   nodeports <- as.numeric(sapply(port_names$node.name, function(x) strsplit(as.character(x), " ")[[1]])[1,])
   these_ports$land_port    <- port_names[   as.numeric(as.character(these_ports$port))  , 'node.name']
+  
+  an <- function(x)as.numeric(as.character(x))
   these_ports$x    <- coord[  nodeports[an(these_ports$port)+1 ], "x"]  
   these_ports$y    <- coord[  nodeports[an(these_ports$port)+1 ], "y"]  
  
@@ -267,8 +269,8 @@ comparePieplotStressPerPort <- function(general,
 }
 
  dd$stressclass <- cut (as.numeric(as.character(dd$percent_change)), breaks=c(-1000,-25,0, +25,+1000))
- dd$totrevenue <- dd$totrevenue / table(dd$port) [dd$port] # caution, important correction to account for the nb of time a port has been used => average revenue per trip over 5 years over 10 replicates
- xyz <- make.xyz(as.numeric(as.character(dd$x)), as.numeric(as.character(dd$y)), as.numeric(as.character(dd$totrevenue)) , dd$stressclass)
+ dd$totrevenue2 <- dd$totrevenue / table(dd$port) [dd$port] # caution, important correction to account for the nb of time a port has been used => average revenue per trip over 5 years over 10 replicates
+ xyz <- make.xyz(as.numeric(as.character(dd$x)), as.numeric(as.character(dd$y)), as.numeric(as.character(dd$totrevenue2)) , dd$stressclass)
  library(RColorBrewer)
  draw.pie (z=xyz$z, x=xyz$x, y=xyz$y, radius=0.5, col=alpha(rev(brewer.pal(4, "RdYlGn")), 0.8), labels="")
  legend.bubble(10,54, z=max(dd$totrevenue),round=0, maxradius=0.5, bty="n",txt.cex=0.6)
@@ -278,7 +280,8 @@ comparePieplotStressPerPort <- function(general,
   mtext(side=3, adj=0, text=selected_scenarios[1], line=1)
 
  
- 
+  #head(dd[dd$land_port=="35084 Hundested",])
+
  
  # add the shapefile of closures
  library(maptools)

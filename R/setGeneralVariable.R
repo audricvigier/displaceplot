@@ -25,7 +25,8 @@ setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLA
                                                        "svana_sub4mx5ns20bt", 
                                                        "svana_sub4mx20ns5bt", 
                                                        "svana_sub4mx5ns5bt" ),
-                                       nbsimus=20
+                                       nbsimus=20,
+                                       use_sqlite=FALSE
                                        ){
 
  # GENERAL SETTINGS
@@ -68,7 +69,7 @@ setGeneralOverallVariable <- function (main_path_outputs =file.path("C:","DISPLA
                                  ) 
 
  
-
+    general$use_sqlite <- use_sqlite
 
    
 

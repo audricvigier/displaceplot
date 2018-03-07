@@ -333,6 +333,7 @@
      for (sim in general$namesimu[[sce]]){
 
 
+     if(!general$use_sqlite){
        ## robust read for the 'loglike' output
        er <- try(   {
         filename <- file.path(general$main.path, general$namefolderinput,  sce, 
@@ -360,7 +361,21 @@
   
    }, silent=TRUE)
   
-  
+   } else{
+    # Use sqlite
+    library(DBI)
+    library(RSQLite)
+    con <- dbConnect(RSQLite::SQLite(), file.path(general$main.path, general$namefolderinput,  sce, 
+                                         paste(general$namefolderinput, "_", sim, "_out", ".db", sep='')))
+    dbReadTable(con, "VesselLogLike")
+    dbReadTable(con, "VesselDef")
+
+    res <- dbSendQuery(con, "SELECT TStep,SUM(Catches) FROM VesselLogLike JOIN VesselDef ON Id = VesselId JOIN VesselLogLikeCatches ON RowId = LoglikeId WHERE Nationality = 'ITA' GROUP BY TStep")
+    dbFetch(res)
+    dbClearResult(res)
+   
+   # todo....
+   }
 
 
    if(class(er)!="try-error"){                                       

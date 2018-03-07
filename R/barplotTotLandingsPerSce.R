@@ -186,7 +186,7 @@ for (sce in general$namefolderoutput){
          if(selected=="_met_") loglike <- loglike[loglike$metier==met,]
          loglike$year  <- unlist(lapply(strsplit(as.character(loglike$year.month), split="\\."), function(x) x[1]))
          nm            <- colnames(loglike)
-         idx.col       <- grep('pop.', nm)
+         idx.col       <- grep('pop.', nm) # 40: DEBUG
          DT            <- data.table(loglike)
          eq1           <- c.listquote( paste ("sum(",nm[idx.col],",na.rm=TRUE)",sep="") )
          loglike.agg   <- DT[,eval(eq1),by=list(year)]
