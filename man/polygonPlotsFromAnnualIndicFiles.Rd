@@ -4,10 +4,13 @@
 \alias{polygonPlotsFromAnnualIndicFiles}
 \title{Produce polygon plots of time series for annual indicators}
 \usage{
-polygonPlotsFromAnnualIndicFiles(general = general, a_variable = "Fbar",
-  the_baseline = "svana_baseline", a_width = 3500, a_height = 1000,
-  selected_scenarios = general$namefolderoutput[1:3], explicit_pops = c(0,
-  1, 2, 3, 11, 23, 24, 26, 30, 31, 32), is_individual_export = TRUE)
+polygonPlotsFromAnnualIndicFiles(general = general,
+  a_variable = "Fbar", nby = 5, the_baseline = "svana_baseline",
+  a_width = 3500, a_height = 1000,
+  selected_scenarios = general$namefolderoutput[1:3],
+  the_scenario_names = general$namefolderoutput[1:3],
+  explicit_pops = c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
+  is_individual_export = TRUE, add_legend = FALSE)
 }
 \arguments{
 \item{fname}{First name}
@@ -44,13 +47,16 @@ loadLoglikeFiles(general=general, use_port_info=FALSE)
 
 
 polygonPlotsFromAnnualIndicFiles (general=general,
-                                         a_variable="Fbar",  # could be "Fbar" or "totland" or "tac"
+                                           a_variable="Fbar",  
+                                           nby=5,
                                            the_baseline="svana_baseline",
                                            a_width=3500,
                                            a_height=1000,
                                            selected_scenarios=general$namefolderoutput[1:3],
+                                           the_scenario_names=general$namefolderoutput[1:3], 
                                            explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
-                                           is_individual_export=TRUE
+                                           is_individual_export=TRUE,
+                                           add_legend=FALSE
                                            )
 
   }

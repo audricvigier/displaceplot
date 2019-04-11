@@ -4,11 +4,12 @@
 \alias{barplotTotLandingsPerSce}
 \title{Making an overview barplot for total landings per scenario for a selected set of stocks}
 \usage{
-barplotTotLandingsPerSce(general = general, selected = "_selected_set1_",
-  selected_pops = c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32), group1 = c(0,
-  1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
-  selected_scenarios = general$namefolderoutput, nby = 5, firsty = "2015",
-  lasty = "2019", a_width = 3500, a_height = 2000,
+barplotTotLandingsPerSce(general = general, type_of_column = "pop",
+  selected = "_selected_set1_", selected_pops = c(0, 1, 2, 3, 11, 23,
+  24, 26, 30, 31, 32), group1 = c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31,
+  32), selected_scenarios = general$namefolderoutput,
+  scenarios_names = general$namefolderoutput, nby = 5,
+  firsty = "2015", lasty = "2019", a_width = 3500, a_height = 2000,
   black_and_white = TRUE, ylims = c(0, 10))
 }
 \arguments{
@@ -47,28 +48,25 @@ general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLAC
 
   barplotTotLandingsPerSce (general=general,
                                    selected="_selected_set1_",
-                                    selected_pops=c(0:38),
+                                   type_of_column="pop",
+                                   selected_pops=c(0:38),
                                    group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
                                    selected_scenarios=general$namefolderoutput,
+                                   scenarios_names=general$namefolderoutput,
                                    nby=5, firsty="2015", lasty="2019",
                                    a_width=3500, a_height=2000, black_and_white = FALSE, ylims = c(0,305))
 
  Note that if black_and_white at true then the barplot is split into 2 groups
 (first group is group1 stocks, second is all other ones)
 
-barplotTotLandingsPerSce (general=general,
-                                   selected="_selected_set2_",
-                                    selected_pops=c(0:38),
-                                   group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
-                                   selected_scenarios=general$namefolderoutput,
-                                   nby=5, firsty="2015", lasty="2019",
-                                   a_width=3500, a_height=2000, black_and_white = FALSE, ylims = c(0,305))
 
 barplotTotLandingsPerSce (general=general,
-                                   selected="_selected_set3_",
-                                    selected_pops=c(0:38),
+                                   type_of_column="disc",
+                                   selected="_selected_set1_",
+                                   selected_pops=c(0:38),
                                    group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
                                    selected_scenarios=general$namefolderoutput,
+                                   scenarios_names=general$namefolderoutput,
                                    nby=5, firsty="2015", lasty="2019",
                                    a_width=3500, a_height=2000, black_and_white = FALSE, ylims = c(0,305))
 

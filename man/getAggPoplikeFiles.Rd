@@ -4,8 +4,8 @@
 \alias{getAggPoplikeFiles}
 \title{Processing the popdyn.dat files}
 \usage{
-getAggPoplikeFiles(general = general, explicit_pops = c(0, 1, 2, 3, 11, 23,
-  24, 26, 30, 31, 32), the_baseline = "svana_baseline")
+getAggPoplikeFiles(general = general, explicit_pops = c(0, 1, 2, 3, 11,
+  23, 24, 26, 30, 31, 32), the_baseline = "svana_baseline")
 }
 \arguments{
 \item{fname}{First name}

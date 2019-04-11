@@ -4,11 +4,12 @@
 \alias{comparePieplotStressPerPort}
 \title{Produce pie plots centered on ports with proportion affected vessels in classes of stress}
 \usage{
-comparePieplotStressPerPort(general, nbsim = 20,
-  the_baseline = "svana_baseline",
-  a_polygon_including_interesting_ports = list(x = c(-2.850909, 16.955191,
-  18.233003, -12.434505), y = c(46.47831, 52.22793, 63.08831, 62.44946)),
-  selected_scenarios = c("svana_sub1mx20", "svana_sub4mx20"),
+comparePieplotStressPerPort(general, a_variable = "rev_from_av_prices",
+  nbsim = 20, the_baseline = "svana_baseline",
+  a_polygon_including_interesting_ports = list(x = c(-2.850909,
+  16.955191, 18.233003, -12.434505), y = c(46.47831, 52.22793, 63.08831,
+  62.44946)), selected_scenarios = c("svana_sub1mx20", "svana_sub4mx20"),
+  name_scenarios = c("svana_sub1mx20", "svana_sub4mx20"),
   gis_shape = list(svana_sub1mx20 = list(NSsub1mx20, BSsub1mx20),
   svana_sub4mx20 = list(NSsub4mx20, BSsub4mx20)), a_width = 3400,
   a_height = 3500, xlims = c(-1, 17), ylims = c(53, 60))

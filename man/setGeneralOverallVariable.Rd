@@ -9,7 +9,8 @@ setGeneralOverallVariable(main_path_outputs = file.path("C:",
   a.year = "2015", a.country = "DEN", nbpops = 39, nbszgroup = 14,
   namefolderinput = "DanishFleet", the_scenarios = c("svana_baseline",
   "svana_sub1mx20", "svana_sub4mx20", "svana_sub4mx5ns20bt",
-  "svana_sub4mx20ns5bt", "svana_sub4mx5ns5bt"), nbsimus = 20)
+  "svana_sub4mx20ns5bt", "svana_sub4mx5ns5bt"), nbsimus = 20,
+  use_sqlite = FALSE)
 }
 \arguments{
 \item{fname}{First name}

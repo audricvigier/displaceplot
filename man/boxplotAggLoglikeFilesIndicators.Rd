@@ -6,8 +6,8 @@
 \usage{
 boxplotAggLoglikeFilesIndicators(general = general,
   the_baseline = "svana_baseline",
-  selected_scenarios = general$namefolderoutput, sets = c("_selected_set1_",
-  "_selected_set2_", "_selected_set3_"))
+  selected_scenarios = general$namefolderoutput,
+  sets = c("_selected_set1_", "_selected_set2_", "_selected_set3_"))
 }
 \arguments{
 \item{fname}{First name}
