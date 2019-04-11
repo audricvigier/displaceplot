@@ -7,22 +7,30 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' general <- setGeneralOverallVariable(main_path_outputs =file.path("C:","DISPLACE_outputs"),
-#'                                       case_study="DanishFleet",
-#'                                       igraph=41,
-#'                                       a.year="2015",
-#'                                       a.country="DEN",
-#'                                       nbpops=39,
-#'                                       nbszgroup=14,
-#'                                       namefolderinput="DanishFleet",
-#'                                       the_scenarios= c("svana_baseline",
+#' general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", "fbas", 
+#'                                                 "Documents", "GitHub", paste0("DISPLACE_input_gis_", 
+#'                                                  general$case_study)),
+#'                                       pathToDisplaceInputs = file.path("C:", "Users", "fbas", 
+#'                                                 "Documents", "GitHub", paste0("DISPLACE_input_", general$case_study)),
+#'                                       pathToOutputs =file.path("C:","DISPLACE_outputs"),
+#'                                       caseStudy="DanishFleet",
+#'                                       iGraph=41,
+#'                                       iYear="2015",
+#'                                       iCountry="DEN",
+#'                                       nbPops=39,
+#'                                       nbSzgroup=14,
+#'                                       nameFolderInput="DanishFleet",
+#'                                       theScenarios= c("svana_baseline",
 #'                                                       "svana_sub1mx20",
 #'                                                       "svana_sub4mx20",
 #'                                                       "svana_sub4mx5ns20bt",
 #'                                                       "svana_sub4mx20ns5bt",
 #'                                                       "svana_sub4mx5ns5bt" ),
-#'                                       nbsimus=20
+#'                                       nbSimus=20,
+#'                                       useSQLite=FALSE    
 #'                                       )
+#'
+#'
 #'
 #'  
 #'  
@@ -95,7 +103,10 @@ addLogbookVarsLikeEffort2PopAnnualIndic <- function(general, a_variable="effort"
    )
 
    # reshape in long
-   mat_sce_y <- reshape(mat_sce_y, direction="long", varying=list(names(mat_sce_y)), v.names="effort", idvar="simu", timevar="year", times=1:6)
+   mat_sce_y <- reshape(mat_sce_y, direction="long",
+                         varying=list(names(mat_sce_y)), 
+                         v.names="effort", idvar="simu", 
+                         timevar="year", times=1:nby)
    mat_sce_y$simu <- paste0("simu",mat_sce_y$simu)        
 
    # bind sce

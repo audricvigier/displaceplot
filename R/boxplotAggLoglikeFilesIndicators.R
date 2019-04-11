@@ -10,22 +10,30 @@
 #' @examples
 #' 
 #' \dontrun{
-#' general <- setGeneralOverallVariable (main_path_outputs =file.path("C:","DISPLACE_outputs"),
-#'                                       case_study="DanishFleet",
-#'                                       igraph=41,
-#'                                       a.year="2015",
-#'                                       a.country="DEN",
-#'                                       nbpops=39,
-#'                                       nbszgroup=14,
-#'                                       namefolderinput="DanishFleet",
-#'                                       the_scenarios= c("svana_baseline",
+#' general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", "fbas", 
+#'                                                 "Documents", "GitHub", paste0("DISPLACE_input_gis_", 
+#'                                                  general$case_study)),
+#'                                       pathToDisplaceInputs = file.path("C:", "Users", "fbas", 
+#'                                                 "Documents", "GitHub", paste0("DISPLACE_input_", general$case_study)),
+#'                                       pathToOutputs =file.path("C:","DISPLACE_outputs"),
+#'                                       caseStudy="DanishFleet",
+#'                                       iGraph=41,
+#'                                       iYear="2015",
+#'                                       iCountry="DEN",
+#'                                       nbPops=39,
+#'                                       nbSzgroup=14,
+#'                                       nameFolderInput="DanishFleet",
+#'                                       theScenarios= c("svana_baseline",
 #'                                                       "svana_sub1mx20",
 #'                                                       "svana_sub4mx20",
 #'                                                       "svana_sub4mx5ns20bt",
 #'                                                       "svana_sub4mx20ns5bt",
 #'                                                       "svana_sub4mx5ns5bt" ),
-#'                                       nbsimus=20
+#'                                       nbSimus=20,
+#'                                       useSQLite=FALSE    
 #'                                       )
+#'
+#'
 #'
 #'
 #'   selected_vessels_set_1 <- as.character(read.table(file.path(general$main.path, general$case_study,
