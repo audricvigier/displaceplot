@@ -117,8 +117,10 @@
 
 
 
+
+
 mapNodeAverageLayerFiles <- function(general, a_type="cumcatches", a_type2="", func="ratio",    # or func="rate",
-                            field_pos=4, the_baseline= "svana_baseline",
+                            field_pos=4, a_pop="", the_baseline= "svana_baseline",
                             selected_scenarios_for_plot=general$namefolderoutput,
                             selected_scenarios_for_table=general$namefolderoutput,
                             selected_areas_for_table=c("22",    "23",    "24",    "25",    "IIIa",  "IVa",   "IVb",   "IVc"),
@@ -201,9 +203,10 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
 
-    if(a_type2!="") nametype <- paste0(a_type,"over",a_type2) else nametype <- a_type
-    namefile  <- file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_selected.tiff") )
-    namefile2 <- file.path(general$main.path, general$namefolderinput, paste0("table_",nametype,".txt") )
+    if(a_type2!="") nametype <- paste0(paste0(a_type, a_pop),"over",a_type2) else nametype <- paste0(a_type, a_pop)
+    dir.create(file.path(general$main.path, general$namefolderinput, "spatial_tif"))
+    namefile  <- file.path(general$main.path, general$namefolderinput, "spatial_tif", paste0("map_averaged_",nametype,"_selected.tiff") )
+    namefile2 <- file.path(general$main.path, general$namefolderinput,  "spatial_tif", paste0("table_",nametype,".txt") )
 
 
     plotid <- 0
@@ -216,6 +219,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
     if(length(selected_scenarios_for_plot)==2) m <- rbind(c(1, 2))
     if(length(selected_scenarios_for_plot)==4) m <- rbind(c(1, 2), c(3,4))
     if(length(selected_scenarios_for_plot)==6) m <- rbind(c(1, 2) ,c(3, 4), c(5, 6))
+    if(length(selected_scenarios_for_plot)==8) m <- rbind(c(1, 2) ,c(3, 4), c(5, 6), c(7, 8))
     layout(m)
     par(mar=c(2,2,3,1))
     par(oma=c(4,4,1,1))
@@ -228,19 +232,19 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      plotid <- plotid +1
  
     this <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
-                              paste("average_",a_type,"_layer.txt", sep='')), header=FALSE, skip = 1)
+                              paste("average_",a_type,"_layer",a_pop,".txt", sep='')), header=FALSE, skip = 1)
     colnames(this) <- c("node","lat",  "long")
-    colnames(this) [field_pos] <- a_type
-    nametype <- a_type
+    colnames(this) [field_pos] <- paste0(a_type, a_pop)
+    nametype <- paste0(a_type, a_pop)
 
     # filter out close to 0 values
-    this[,a_type]  <- replace(this[,a_type], this[,a_type]<1e-1, 0)
+    this[,nametype]  <- replace(this[,nametype], this[,nametype]<1e-1, 0)
    
     if(a_type2!=""){
        this  <- replace(this, is.na(this), 0)
        this[,a_type]  <- replace(this[,a_type], is.infinite(this[,a_type]), 0)
        this2 <- read.table(file=file.path(general$main.path, general$namefolderinput, sce,
-                              paste("average_",a_type2,"_layer.txt", sep='')), header=FALSE, skip = 1)
+                              paste("average_",a_type2,"_layer",a_pop,".txt", sep='')), header=FALSE, skip = 1)
        colnames(this2) <- c("node","lat",  "long")
        colnames(this2) [field_pos] <- a_type2
        this2  <- replace(this2, is.na(this2), 0)
@@ -250,9 +254,9 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
        this2[,a_type2] <- replace(this2[,a_type2], this2[,a_type2]<1e-1, 0)
      
        this <- merge(this, this2)
-       if(func=="ratio") this[,paste0(a_type,"over",a_type2)] <- this [,a_type]/this [,a_type2]  # assuming a ratio
-       if(func=="rate") this[,paste0(a_type,"over",a_type2)] <- (this [,a_type])/(this [,a_type]+this [,a_type2])  # assuming a rate
-       nametype <- paste0(a_type,"over",a_type2) # rename
+       if(func=="ratio") this[,paste0(nametype,"over",a_type2)] <- this [,nametype]/this [,a_type2]  # assuming a ratio
+       if(func=="rate") this[,paste0(nametype,"over",a_type2)] <- (this [,nametype])/(this [,nametype]+this [,a_type2])  # assuming a rate
+       nametype <- paste0(paste0(nametype,a_pop),"over",a_type2) # rename
     }
     
     
@@ -329,7 +333,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
         xlim=xlims, ylim=ylims    
         )
        library(maps)
-       if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][[i]], add=TRUE, col=grey(0.8), border=FALSE)
+       if (!is.null(gis_shape)) if(length(gis_shape[[sce]])>0) for (i in 1:length(gis_shape[[the_baseline]])) plot(gis_shape[[the_baseline]][[i]], add=TRUE, col=grey(0.8), border=TRUE)
        #text(coordinates(ices_areas), labels=ices_areas$ICES_area, cex=1.4, col="black")
 
      xrange <- range(the_baseline_layer$round_long/xcell)
@@ -357,7 +361,8 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      for(int in 1: length(the_breaks_baseline[-1])) {
             rstr_proj[rstr_proj>the_breaks_baseline[int] & rstr_proj<the_breaks_baseline[int+1]]  <- the_breaks_baseline[int+1]
      }
-      namefile_gtiff= file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce))
+      dir.create(file.path(general$main.path, general$namefolderinput, "spatial_tif"))
+      namefile_gtiff= file.path(general$main.path, general$namefolderinput, "spatial_tif", paste0("map_averaged_",nametype,"_", plotid,"_", sce))
       writeRaster(rstr_proj, namefile_gtiff, format = "GTiff", overwrite=TRUE)
  
   
@@ -391,7 +396,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
     x = c(xlims[1]+0.2, xlims[1]+0.4, xlims[1]+0.4, xlims[1]+0.2)
-    y = c(ylims[1]+0.5, ylims[1]+4, ylims[1]+4, ylims[1]+0.5)
+    y = c(ylims[1]+0.5, ylims[1]+3, ylims[1]+3, ylims[1]+0.5)
     the_breaks_leg <-NULL
     a_title <- substitute( expression(paste(legend_text1, km^2)), list(legend_text1=legend_text1))
     if(func=="rate") a_title <- legend_text1  # overwrite
@@ -470,7 +475,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
      rstr        <- rasterize(x=some_coords, y=r, field=this[,nametype], fun="sum") 
      exportGTiff(
                    a_raster= rstr, 
-                   namefile_gtiff= file.path(general$main.path, general$namefolderinput, paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
+                   namefile_gtiff= file.path(general$main.path, general$namefolderinput, "spatial_tif", paste0("map_averaged_",nametype,"_", plotid,"_", sce)),
                     a_crs="+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"
                    )
 
@@ -483,7 +488,7 @@ function (pnts, cols = heat.colors(100), limits = c(0, 1), title = "Legend", leg
 
 
     x = c(xlims[1]+0.2, xlims[1]+0.4, xlims[1]+0.4, xlims[1]+0.2)
-    y = c(ylims[1]+0.5, ylims[1]+4, ylims[1]+4, ylims[1]+0.5)
+    y = c(ylims[1]+0.5, ylims[1]+3, ylims[1]+3, ylims[1]+0.5)
     the_breaks_leg <-NULL
     #for(i in 1: length(the_breaks[-1])){ if(the_breaks[i]>1) {the_breaks_leg[i] <- round(the_breaks[i])} else{the_breaks_leg[i]<- the_breaks[i]}}
     the_breaks_leg <- the_breaks
@@ -525,7 +530,4 @@ write.table(table_obj_relative_to_baseline, "clipboard", sep="\t", row.names=TRU
 
  return(table_obj_relative_to_baseline)
 }
-
-
-
 

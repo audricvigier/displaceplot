@@ -367,13 +367,28 @@
     library(RSQLite)
     con <- dbConnect(RSQLite::SQLite(), file.path(general$main.path, general$namefolderinput,  sce, 
                                          paste(general$namefolderinput, "_", sim, "_out", ".db", sep='')))
-    dbReadTable(con, "VesselLogLike")
-    dbReadTable(con, "VesselDef")
+    head(dbReadTable(con, "VesselLogLike"))
+    head(dbReadTable(con, "VesselDef"))
+    head(dbReadTable(con, "VesselLogLikeCatches"))
 
-    res <- dbSendQuery(con, "SELECT TStep,SUM(Catches) FROM VesselLogLike JOIN VesselDef ON Id = VesselId JOIN VesselLogLikeCatches ON RowId = LoglikeId WHERE Nationality = 'ITA' GROUP BY TStep")
-    dbFetch(res)
+    res <- dbSendQuery(con, "SELECT TStep,SUM(Catches) FROM VesselLogLike JOIN VesselDef ON Id = VesselId JOIN VesselLogLikeCatches ON RowId = LoglikeId WHERE Nationality = 'DNK' GROUP BY TStep")
+    dbFetch(res, n= -1)
     dbClearResult(res)
    
+    res <- dbSendQuery(con, "SELECT TStep,AVG(vpuf) FROM VesselLogLike JOIN VesselDef ON Id = VesselId WHERE Nationality = 'DNK' GROUP BY TStep")
+    dd <- dbFetch(res, n= -1)
+    dbClearResult(res)
+    
+    res <- dbSendQuery(con, "SELECT TStep,SUM(gav) FROM VesselLogLike JOIN VesselDef ON Id = VesselId WHERE Nationality = 'DNK' GROUP BY TStep")
+    dd <- dbFetch(res, n= -1)
+    dbClearResult(res)
+   sum(dd[,2])
+    
+    plot(dd)
+    dd$runningaverage <- cumsum(dd[,2])/(1:length(dd[,2]))
+    plot(dd[,1], dd$runningaverage)
+   
+    
    # todo....
    }
 

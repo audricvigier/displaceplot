@@ -67,12 +67,15 @@
 
 
 
+
 comparePieplotStressPerPort <- function(general,
+                                       a_variable= "rev_from_av_prices",
                                        nbsim=20,
                                        the_baseline="svana_baseline",
                                        a_polygon_including_interesting_ports= list(x=c(-2.850909,  16.955191,  18.233003, -12.434505),
                                                                                    y=c(46.47831, 52.22793, 63.08831, 62.44946)),
                                        selected_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
+                                       name_scenarios=  c("svana_sub1mx20","svana_sub4mx20"), 
                                        gis_shape=list(
                                            svana_sub1mx20=   list(NSsub1mx20, BSsub1mx20),
                                            svana_sub4mx20=   list(NSsub4mx20, BSsub4mx20)),
@@ -84,30 +87,30 @@ comparePieplotStressPerPort <- function(general,
  
   #-------------------
   compare_per_port <- function(
-          sim=1,
+          sim=1,                       
           a_polygon=list(x=c(13.27,9.08,11.25,15.15, 15.00,55.67),
                                   y=c(56.00,54.82,53.50,53.89,55.11,14.15)),
           sce1   =lst_loglike_agg_weight_vid_port_high_profit_grounds,
           sce2   =lst_loglike_agg_weight_vid_port_high_profit_grounds_biolsce_Linfs_M_mig_weight,
-          stock  ="pop.10"
+          a_variable= "rev_from_av_prices"
           )  {
 
    an <- function(x)as.numeric(as.character(x))
    library(sp)
-   obj1 <- sce1[[sim]][ point.in.polygon( an(sce1[[sim]]$ld_port_x), an(sce1[[sim]]$ld_port_y), a_polygon$x, a_polygon$y )==1 ,]
+   obj1 <- sce1[[sim]][ point.in.polygon( an(sce1[[sim]]$ld_port_x), an(sce1[[sim]]$ld_port_y), a_polygon$x, a_polygon$y )==1,]
    obj2 <- sce2[[sim]][ point.in.polygon( an(sce2[[sim]]$ld_port_x), an(sce2[[sim]]$ld_port_y), a_polygon$x, a_polygon$y )==1,]
 
 
 
 
-   dd <-  tapply(apply(obj1[,stock], 1, sum, na.rm=TRUE),
+   dd <-  tapply(apply(obj1[,a_variable], 1, sum, na.rm=TRUE),
         obj1$land_port, sum, na.rm=TRUE)
-   dd2 <-  tapply(apply(obj2[,stock], 1, sum, na.rm=TRUE),
+   dd2 <-  tapply(apply(obj2[,a_variable], 1, sum, na.rm=TRUE),
         obj2$land_port, sum, na.rm=TRUE)
    a_diff       <-  round(an(dd2[names(dd2)])/  an(dd[names(dd)]) *100  )    -100
   names(a_diff) <- names(dd)
 
-  dd3 <-   tapply(obj1[,"rev_from_av_prices"],
+  dd3 <-   tapply(obj1[,a_variable],
         obj1$land_port, sum, na.rm=TRUE)
   
 
@@ -129,7 +132,7 @@ comparePieplotStressPerPort <- function(general,
                                   y=c(56.00,54.82,53.50,53.89,55.11,14.15)),
           sce1   =lst_loglike_agg_weight_vid_port_high_profit_grounds,
           sce2   =lst_loglike_agg_weight_vid_port_high_profit_grounds_biolsce_Linfs_M_mig_weight,
-          stock  ="pop.10"
+          a_variable  ="rev_from_av_prices"
           )  {
 
    an <- function(x)as.numeric(as.character(x))
@@ -140,10 +143,10 @@ comparePieplotStressPerPort <- function(general,
 
 
 
-    dd <-  aggregate(apply(obj1[,stock], 1, sum, na.rm=TRUE),
+    dd <-  aggregate(apply(obj1[,a_variable], 1, sum, na.rm=TRUE),
         list(obj1$land_port, obj1$VE_REF), sum, na.rm=TRUE)
     colnames(dd)[3] <- "ref" 
-    dd2 <-  aggregate(apply(obj2[,stock], 1, sum, na.rm=TRUE),
+    dd2 <-  aggregate(apply(obj2[,a_variable], 1, sum, na.rm=TRUE),
          list(obj2$land_port, obj2$VE_REF), sum, na.rm=TRUE)
     colnames(dd2)[3] <- "sce" 
 
@@ -151,7 +154,7 @@ comparePieplotStressPerPort <- function(general,
   
     dd3$a_diff       <-  round(an(dd3[,"sce"])/  an(dd3[,"ref"]) *100  )    -100
    
-    dd4 <-   tapply(obj1[,"rev_from_av_prices"],
+    dd4 <-   tapply(obj1[, a_variable[1]],
          list(obj1$land_port), sum, na.rm=TRUE)
   
     dd3$totrevenue <- dd4 [as.character(dd3[,1])]
@@ -172,22 +175,26 @@ comparePieplotStressPerPort <- function(general,
   for(sce in general$namefolderoutput[!general$namefolderoutput %in% c(the_baseline)]) {
 
 
-  for(sim in 1:nbsim) {
+     loglike <- get( paste("lst_loglike_agg_",what,"_vid_port_", sce, sep=''), env=.GlobalEnv)
+     namesimus <- intersect(names(loglike_baseline), names(loglike))
+       
+     for(sim in 1:nbsim) {
 
    
-      
-
-       loglike <- get( paste("lst_loglike_agg_",what,"_vid_port_", sce, sep=''), env=.GlobalEnv)
-       res     <- compare_per_port_vessel(sim=sim,
+       
+       
+       if(paste0("simu",sim) %in% namesimus)
+       {
+           res     <- compare_per_port_vessel(sim=paste0("simu",sim),
                       a_polygon=a_polygon_including_interesting_ports,
-                      sce1=loglike_baseline,
-                      sce2=loglike,
-                #      stock  =c("pop.0", "pop.1", "pop.2", "pop.3"))
-                      stock  =c("rev_from_av_prices", "rev_from_av_prices"))
+                      sce1=loglike_baseline[namesimus],
+                      sce2=loglike[namesimus],
+                      a_variable  =c(a_variable, a_variable)) # tips: repeat twice to avoid triggering apply() on a single dim
 
-      these_ports <- rbind.data.frame(these_ports,
+          these_ports <- rbind.data.frame(these_ports,
                                   cbind(sce, sim, res)
                                   )
+      }
    }
   } # end sce
 
@@ -226,32 +233,50 @@ comparePieplotStressPerPort <- function(general,
   library(maptools)                              
  
  # plot
- namefile       <- paste(paste("pie_chart_per_harbour", sep=""))
+ namefile       <- paste(paste("pie_chart_per_harbour_", sep=""))
  output.folder  <- file.path(general$main.path, general$namefolderinput)
- tiff(filename=file.path(output.folder, paste(namefile, "2.tiff", sep="" )),
+ dir.create(file.path(output.folder, "pie_chart_stress_plots"))
+ tiff(filename=file.path(output.folder, "pie_chart_stress_plots", paste(namefile, a_variable, ".tiff", sep="" )),
                                    width = a_width, height = a_height,
                                    units = "px", pointsize = 12,  res=300, compression=c("lzw"))
- par(mar=c(2.5,3,1,1))
- par(mfrow=c(1,2))
+
+ if(length(selected_scenarios)==2){  par(mar=c(2.5,3,1,1)); par(mfrow=c(1,2)) }
+ if(length(selected_scenarios)==3){  par(mar=c(2.5,3,1,1)); par(mfrow=c(1,3)) }
+ if(length(selected_scenarios)==4){  par(mar=c(2,1,2,1)); par(mfrow=c(2,2)) }
+ if(length(selected_scenarios)==5){  par(mar=c(2,2,2,1)); par(mfrow=c(3,2)) }
+ if(length(selected_scenarios)==6){  par(mar=c(2,2,2,1)); par(mfrow=c(3,2)) }
+ if(length(selected_scenarios)==7){  par(mar=c(2,2,2,1)); par(mfrow=c(4,2)) }
+ if(length(selected_scenarios)==8){  par(mar=c(2,2,2,1)); par(mfrow=c(4,2)) }
  par(oma=c(1,2,1,1))
  
  
- # 1
- library(mapdata)
- map("worldHires",   xlim=xlims, ylim=ylims, add=FALSE, col=grey(0.8), border=grey(0.8), fill=TRUE, asp= 2.587761)
- mtext(side=1, text="Longitude", line=1.9)
- mtext(side=2, text="Latitude", line=2.7)
+ # PLOT!
+ count <- 0
+ res <- NULL
+ for(sce in selected_scenarios) {
+  count <- count+1
+  
+  name_sce <- name_scenarios[count]
+  cat(paste(name_sce, "\n"))
+ 
+  library(mapdata)
+  map("worldHires",   xlim=xlims, ylim=ylims, add=FALSE, col=grey(0.8), border=grey(0.8), fill=TRUE, asp= 2.587761)
+  mtext(side=1, text="Longitude", line=1.9)
+  mtext(side=2, text="Latitude", line=2.7)
  
   # add the pie chart
- library(mapplots)
- library(scales)
- box()
+  library(mapplots)
+  library(scales)
+  box()
  
-        if (!is.null(gis_shape)) if(length(gis_shape[[selected_scenarios[1]]])>0) for (i in 1:length(gis_shape[[selected_scenarios[1]]])) plot(gis_shape[[selected_scenarios[1]]][[i]], add=TRUE, fill=FALSE, border=grey(0.8))
+  if (!is.null(gis_shape)) 
+    if(length(gis_shape[[sce]])>0) 
+      for (i in 1:length(gis_shape[[sce]])) 
+       plot(gis_shape[[sce]][[i]], add=TRUE, fill=FALSE, border=grey(0.8))
  
  maxrev <- max(these_ports$totrevenue)  
  
- dd <-  these_ports[these_ports$sce==selected_scenarios[1],]  
+ dd <-  these_ports[these_ports$sce==sce,]  
 
  
  make.xyz<- function (x, y, z, group, FUN = sum, ...) 
@@ -269,15 +294,19 @@ comparePieplotStressPerPort <- function(general,
 }
 
  dd$stressclass <- cut (as.numeric(as.character(dd$percent_change)), breaks=c(-1000,-25,0, +25,+1000))
- dd$totrevenue2 <- dd$totrevenue / table(dd$port) [dd$port] # caution, important correction to account for the nb of time a port has been used => average revenue per trip over 5 years over 10 replicates
+ dd$totrevenue2 <- dd$totrevenue / table(dd$port) [dd$port] # caution, important correction to account for the nb of time a port has been used => average revenue per trip over 5 years over XX replicates
+ 
+ print(head(dd))
+ 
+ res <- rbind(res,dd)
  xyz <- make.xyz(as.numeric(as.character(dd$x)), as.numeric(as.character(dd$y)), as.numeric(as.character(dd$totrevenue2)) , dd$stressclass)
  library(RColorBrewer)
- draw.pie (z=xyz$z, x=xyz$x, y=xyz$y, radius=0.5, col=alpha(rev(brewer.pal(4, "RdYlGn")), 0.8), labels="")
- legend.bubble(10,54, z=max(dd$totrevenue),round=0, maxradius=0.5, bty="n",txt.cex=0.6)
+ draw.pie (z=xyz$z, x=xyz$x, y=xyz$y, radius=0.5, col=alpha(brewer.pal(4, "RdYlGn"), 0.8), labels="")
+ legend.bubble(xlims[1]+0.5,ylims[1]+0.5, z=max(dd$totrevenue),round=0, maxradius=0.5, bty="n",txt.cex=0.6)
   axis(1)
   axis(2, las=2)
   box()
-  mtext(side=3, adj=0, text=selected_scenarios[1], line=1)
+  mtext(side=3, adj=0, text=name_sce, line=1)
 
  
   #head(dd[dd$land_port=="35084 Hundested",])
@@ -293,49 +322,18 @@ comparePieplotStressPerPort <- function(general,
  # text (as.numeric(as.character(ports$x))+0.5, as.numeric(as.character(ports$y))+0.05,
  #       labels=ports$port, cex=0.5, col=1)
   legend("bottomright", legend=c('<-25%', '-25,0%', '0,+25%', '>25%'), fill=alpha(brewer.pal(4, "RdYlGn"), 0.8), bty="n")
-
+                                                                                             
   cc <- these_ports[!duplicated(data.frame(these_ports$port, these_ports$sce)),]
  
-  # 2
- library(mapdata)
- map("worldHires",   xlim=xlims, ylim=ylims, add=FALSE, col=grey(0.8), border=grey(0.8), fill=TRUE, asp= 2.587761)
- mtext(side=1, text="Longitude", line=1.9)
- mtext(side=2, text="Latitude", line=2.7)
-
-
-  if (!is.null(gis_shape)) if(length(gis_shape[[selected_scenarios[2]]])>0) for (i in 1:length(gis_shape[[selected_scenarios[2]]])) plot(gis_shape[[selected_scenarios[2]]][[i]], add=TRUE,fill=FALSE, border=grey(0.8))
+ } # end sce
  
-
- dd <-  these_ports[these_ports$sce==selected_scenarios[2],]  
  
- dd$stressclass <- cut (as.numeric(as.character(dd$percent_change)), breaks=c(-1000,-25,0, +25,+1000))
- dd$totrevenue  <- dd$totrevenue / table(dd$port) [dd$port] # caution, important correction to account for the nb of time a port has been used => average 5 year revenue per vessel in this port over 10 replicates
- xyz <- make.xyz(as.numeric(as.character(dd$x)), as.numeric(as.character(dd$y)), as.numeric(as.character(dd$totrevenue)) , dd$stressclass)
- library(RColorBrewer)
- draw.pie (z=xyz$z, x=xyz$x, y=xyz$y, radius=0.5, col=alpha(rev(brewer.pal(4, "RdYlGn")), 0.8), labels="")
- legend.bubble(10,54, z=max(dd$totrevenue),round=0,maxradius=0.5, bty="n",txt.cex=0.6)
-
- # add the shapefile of closures
- library(maptools)
-  
-  
- 
-  ports <- dd[!duplicated(dd$port), c('x', 'y', 'port')]
-
-  legend("bottomright", legend=c('<-25%', '-25,0%', '0,+25%', '>25%'), fill=alpha(brewer.pal(4, "RdYlGn"), 0.8), bty="n")
-  axis(1)
-  axis(2, las=2)
-  box()
-  mtext(side=3, adj=0, text=selected_scenarios[2], line=1)
-  
- 
-
 
 dev.off()
 
 
 
-return()
+return(res)
 }
 
 

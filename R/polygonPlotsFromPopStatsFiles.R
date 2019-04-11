@@ -1,5 +1,5 @@
 
-#' Produce polygon plots of time series for annual indicators
+#' Produce polygon plots of time series for pop monthly indicators
 #'
 #' This function produces all accumulated time series over month to compare scenario outcomes
 #' All the plots are being stored in a polygons_plots folder that can further be found in the output folder.
@@ -31,29 +31,27 @@
 #' 
 #' 
 #' 
-#' polygonPlotsFromAnnualIndicFiles (general=general,
-#'                                            a_variable="Fbar",  
-#'                                            nby=5,
-#'                                            the_baseline="svana_baseline",
-#'                                            a_width=3500,
-#'                                            a_height=1000,
-#'                                            selected_scenarios=general$namefolderoutput[1:3],
-#'                                            the_scenario_names=general$namefolderoutput[1:3], 
-#'                                            explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
-#'                                            is_individual_export=TRUE,
-#'                                            add_legend=FALSE
-#'                                            )
+#' polygonPlotsFromPopStatsFiles (general=general,
+#'                                          a_variable="Fbar",  
+#'                                           nby=5,
+#'                                           the_baseline="svana_baseline",
+#'                                           a_width=3500,
+#'                                           a_height=1000,
+#'                                           selected_scenarios=general$namefolderoutput[1:3],
+#'                                           the_scenario_names=general$namefolderoutput[1:3], 
+#'                                           explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
+#'                                           is_individual_export=TRUE,
+#'                                           add_legend=TRUE
+#'                                           )
 #'
 #'   }
 
 
 
  
-
- 
-polygonPlotsFromAnnualIndicFiles <- function(general=general,
+polygonPlotsFromPopStatsFiles <- function(general=general,
                                             a_variable="Fbar",
-                                            nby=5,
+                                             nby=5,
                                             the_baseline="svana_baseline",
                                             a_width=3500,
                                             a_height=1000,
@@ -66,7 +64,7 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
 {
 
                                                 
-    do_polygon_plot_annual_indic <- function(
+    do_polygon_plot_pop_stats <- function(
                   a_variable="Fbar",
                   nby=5,
                   a_stock=0,
@@ -82,9 +80,7 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
                   color_legend= c(rgb(94/255,79/255,162/255,0.5), rgb (158/255,1/255,66/255,0.5), rgb(140/255,81/255,10/255,0.4),
                               rgb(1,0,0,0.5), rgb(0,0.5,1,0.5), rgb(0,1,0.5,0.5), rgb(1,0,0.5,0.5), rgb(0,0,0,0.2)),
                   the_sims=1:20,
-                  a_width=3500,
-                  a_height=1000
-                                        
+                   width = 3500, height = 1000
                   ) {
  
 
@@ -98,11 +94,15 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
          for(i in the_sims) {
             print(paste("sim ", i))
          # merge all infos
-               annual_indics              <-  read.table (file=file.path(general$main.path, general$namefolderinput, sce, paste('popdyn_annual_indic_simu',  i,".dat", sep='')))
-               colnames(annual_indics)    <-  c("tstep", "stk", "multi", "multi2", "Fbar", "totland_kg", "totdisc_kg", "SSB_kg", "tac", paste0("N",0:10), paste0("F",0:10), paste0("W",0:10), paste0("M",0:10))
+               pop_stats              <-  read.table (file=file.path(general$main.path, general$namefolderinput, sce, paste('popstats_simu',  i,".dat", sep='')))
+               colnames(pop_stats)    <-  c("tstep", "stk", paste0("N",0:13), paste0("W",0:13), paste0("SSB",0:13))
 
-               annual_indics <- annual_indics [, 1:9]   # FOR NOW...
-             res <- rbind (res, cbind(annual_indics, sce=sce, simu=paste("simu", i, sep="_")))
+               agg_pop_stats <- cbind.data.frame(pop_stats[, 1:2],
+                                              totN=apply(pop_stats[,grep("N", colnames(pop_stats))], 1, sum),
+                                              meanW=apply(pop_stats[,grep("SSB", colnames(pop_stats))], 1, mean),
+                                              totSSB=apply(pop_stats[,grep("SSB", colnames(pop_stats))], 1, sum)
+                                              )
+            res <- rbind (res, cbind(agg_pop_stats, sce=sce, simu=paste("simu", i, sep="_")))
              }
       }
       res <- res[res$stk==a_stock,]
@@ -160,8 +160,8 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
 
 
     if(export) tiff(file=file.path(general$main.path, general$namefolderinput, "polygon_plots",
-                    paste("", a_variable,"perScenario_",a_stockname, "_", name_set_of_sces, ".tiff", sep="")), compression="lzw",
-                        width=a_width, height=a_height)
+                    paste("", a_variable,"perScenario_",a_stockname, "_", name_set_of_sces, ".tiff", sep="")), 
+                     width = a_width, height = a_height, compression="lzw")
    
     sim_ref <- names(which.max (apply(mat_sce_base, 1, function(x) sum(as.numeric(x), na.rm=TRUE))) )
    
@@ -177,29 +177,29 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
        col=2, type="n", xlab=a_xlab, ylab="", cex.lab=1.6, axes=FALSE)
       
    
-      polygon(x=c((1:ncol(mat_sce_base))[1:(nby)], rev((1:ncol(mat_sce_base))[1:(nby)])),
-       y=c(apply(mat_sce_base[,1:(nby)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce_base[,1:(nby)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])),
+      polygon(x=c((1:ncol(mat_sce_base))[1:(nby*12)], rev((1:ncol(mat_sce_base))[1:(nby*12)])),
+       y=c(apply(mat_sce_base[,1:(nby*12)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce_base[,1:(nby*12)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])),
          col= color_legend[1], border=NA)   # blue
 
-       polygon(x=c((1:ncol(mat_sce1))[1:(nby)], rev((1:ncol(mat_sce1))[1:(nby)])),
-       y=c(apply(mat_sce1[,1:(nby)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["95%",], rev(apply(mat_sce1[,1:(nby)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["5%",])),
+       polygon(x=c((1:ncol(mat_sce1))[1:(nby*12)], rev((1:ncol(mat_sce1))[1:(nby*12)])),
+       y=c(apply(mat_sce1[,1:(nby*12)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["95%",], rev(apply(mat_sce1[,1:(nby*12)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["5%",])),
          col=  color_legend[2], border=NA)  # green
 
-       polygon(x=c((1:ncol(mat_sce2))[1:(nby)], rev((1:ncol(mat_sce2))[1:(nby)])),
-       y=c(apply(mat_sce2[,1:(nby)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce2[,1:(nby)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])),
+       polygon(x=c((1:ncol(mat_sce2))[1:(nby*12)], rev((1:ncol(mat_sce2))[1:(nby*12)])),
+       y=c(apply(mat_sce2[,1:(nby*12)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce2[,1:(nby*12)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])),
          col=   color_legend[3], border=NA) # red
          
-       if(length(selected_scenarios)>=4) polygon(x=c((1:ncol(mat_sce3))[1:(nby)], rev((1:ncol(mat_sce3))[1:(nby)])),
-       y=c(apply(mat_sce3[,1:(nby)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce3[,1:(nby)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])) ,
+       if(length(selected_scenarios)>=4) polygon(x=c((1:ncol(mat_sce3))[1:(nby*12)], rev((1:ncol(mat_sce3))[1:(nby*12)])),
+       y=c(apply(mat_sce3[,1:(nby*12)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce3[,1:(nby*12)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])) ,
          col= color_legend[4], border=NA) # grey
  
-       if(length(selected_scenarios)>=5) polygon(x=c((1:ncol(mat_sce4))[1:(nby)], rev((1:ncol(mat_sce4))[1:(nby)])),
-       y=c(apply(mat_sce4[,1:(nby)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce4[,1:(nby)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])) ,
+       if(length(selected_scenarios)>=5) polygon(x=c((1:ncol(mat_sce4))[1:(nby*12)], rev((1:ncol(mat_sce4))[1:(nby*12)])),
+       y=c(apply(mat_sce4[,1:(nby*12)], 2, quantile, probs=c(0.05, 0.95), na.rm=TRUE)["5%",], rev(apply(mat_sce4[,1:(nby*12)], 2, quantile,  probs=c(0.05, 0.95), na.rm=TRUE)["95%",])) ,
          col=  color_legend[5], border=NA) # grey
     
 
     axis(2, las=2, cex.axis=1.5)
-    axis(1, at=1:nby, labels=seq(12, 12*nby, by=12), cex.axis=1.5)
+    axis(1, at=1:(nby*12), labels=seq(1, 12*nby, by=1), cex.axis=1.5)
     if(add_legend) legend("topleft", fill=color_legend, border =color_legend, legend=selected_scenarios, cex=1.3, bty="n")
     box()
   
@@ -241,7 +241,7 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
 
    for (a_stock in explicit_pops){
   
-   do_polygon_plot_annual_indic (
+   do_polygon_plot_pop_stats (
                   a_variable=a_variable,
                    nby=nby,
                   a_stock=a_stock,
@@ -252,13 +252,13 @@ polygonPlotsFromAnnualIndicFiles <- function(general=general,
                   selected=selected,
                   export=is_individual_export,
                   a_xlab="# Month",
-                  if(a_variable=="Fbar") {a_ylab="F" } else{  if(a_variable=="totland_kg"){ a_ylab= "Total landings (kg)"} else{  if(a_variable=="totdisc_kg"){ a_ylab= "Total discards (kg)"} else a_ylab=a_variable}},
+                  if(a_variable=="totN") {a_ylab="Total N" } else{  if(a_variable=="meanW"){ a_ylab= "Mean Weight (kg)"} else{  if(a_variable=="totSSB"){ a_ylab= "SSB (kg)"} else a_ylab=a_variable}},
                   add_legend=add_legend,
                   color_legend= c(rgb(94/255,79/255,162/255,0.5), rgb (158/255,1/255,66/255,0.5), rgb(140/255,81/255,10/255,0.4),
                               rgb(1,0,0,0.5), rgb(0,0.5,1,0.5), rgb(0,1,0.5,0.5), rgb(1,0,0.5,0.5), rgb(0,0,0,0.2)),
                   the_sims=1:length(general$namesimu[[1]]),
-                  a_width=a_width,
-                  a_height=a_height
+                  width = a_width,
+                  height = a_height
                   ) 
    
  

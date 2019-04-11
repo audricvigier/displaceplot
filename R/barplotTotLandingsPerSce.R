@@ -35,28 +35,25 @@
 #'
 #'   barplotTotLandingsPerSce (general=general,
 #'                                    selected="_selected_set1_",
-#'                                     selected_pops=c(0:38),
+#'                                    type_of_column="pop",
+#'                                    selected_pops=c(0:38),
 #'                                    group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
 #'                                    selected_scenarios=general$namefolderoutput,
+#'                                    scenarios_names=general$namefolderoutput,
 #'                                    nby=5, firsty="2015", lasty="2019",
 #'                                    a_width=3500, a_height=2000, black_and_white = FALSE, ylims = c(0,305))
 #'
 #'  Note that if black_and_white at true then the barplot is split into 2 groups
 #' (first group is group1 stocks, second is all other ones)
 #'
-#' barplotTotLandingsPerSce (general=general,
-#'                                    selected="_selected_set2_",
-#'                                     selected_pops=c(0:38),
-#'                                    group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
-#'                                    selected_scenarios=general$namefolderoutput,
-#'                                    nby=5, firsty="2015", lasty="2019",
-#'                                    a_width=3500, a_height=2000, black_and_white = FALSE, ylims = c(0,305))
 #'
 #' barplotTotLandingsPerSce (general=general,
-#'                                    selected="_selected_set3_",
-#'                                     selected_pops=c(0:38),
+#'                                    type_of_column="disc",
+#'                                    selected="_selected_set1_",
+#'                                    selected_pops=c(0:38),
 #'                                    group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
 #'                                    selected_scenarios=general$namefolderoutput,
+#'                                    scenarios_names=general$namefolderoutput,
 #'                                    nby=5, firsty="2015", lasty="2019",
 #'                                    a_width=3500, a_height=2000, black_and_white = FALSE, ylims = c(0,305))
 #'
@@ -66,12 +63,13 @@
 
 
 
-
 barplotTotLandingsPerSce <- function(general=general,
+                                    type_of_column="pop", # or "disc"
                                     selected="_selected_set1_",
                                     selected_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
                                     group1= c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
                                     selected_scenarios=general$namefolderoutput,
+                                    scenarios_names=general$namefolderoutput,
                                     nby=5, firsty="2015", lasty="2019",
                                     a_width=3500, a_height=2000, black_and_white = TRUE, ylims = c(0,10)){
 
@@ -104,23 +102,23 @@ barplotTotLandingsPerSce <- function(general=general,
 #------------------------
 reshape_per_pop_for_one_sce <- function(lst_loglike1=lst_loglike,
                                         namesimu=paste("simu", 1:5, sep=''),
-                                        selected_pops=explicit_pops){
+                                        selected_pops=explicit_pops,
+                                        type_of_column="pop",
+                                        nby=5){
 
-
+    
    # filter lst_loglike to trash away the failed (i.e. non-complete) simus:
    # detection according to the number of rows...
    dd                <- table(unlist(lapply(lst_loglike1, nrow)))
-   expected_nb_rows  <- as.numeric(names(dd[dd==max(dd)])) # most common number of rows
-   idx               <- unlist(lapply(lst_loglike1, function(x) nrow(x)==expected_nb_rows))
-   namesimu          <- names(unlist(lapply(lst_loglike1, function(x) nrow(x)==expected_nb_rows)))[idx]
-
+   namesimu          <- names(unlist(lapply(lst_loglike1, function(x) nrow(x)>=nby)))
+   print(namesimu)
    # subset
    refsimu     <- namesimu[1]
    lst_loglike <- lst_loglike1[ namesimu ]
 
    # explicit pops??
    pops <- selected_pops
-   idx_col <- grep("pop", colnames(lst_loglike1[[refsimu]]))
+   idx_col <- grep(type_of_column, colnames(lst_loglike[[refsimu]]))
 
 
   # check
@@ -128,27 +126,27 @@ reshape_per_pop_for_one_sce <- function(lst_loglike1=lst_loglike,
   #print( lapply(lst_loglike1[ namesimu ], nrow) )
 
 
-  # first, reshape for pop
-  for (i in 1:length(lst_loglike1)){
-   lst_loglike1[[ i ]] <- lst_loglike1[[ i ]][, colnames(lst_loglike1[[ i ]]) %in% c("year",paste0("pop.",pops)) ]
+  # first, reshape for pop 
+  #browser()
+  for (i in 1:length(lst_loglike)){
+   lst_loglike[[ i ]] <- lst_loglike[[ i ]][, colnames(lst_loglike[[ i ]]) %in% c("year", paste0(type_of_column,".",pops)) ]    [1:nby, (1:(length(selected_pops)+1))]
 
-   lst_loglike1[[ i ]] <- cbind( reshape(lst_loglike1[[ i ]], idvar="year", varying=list(2:ncol(lst_loglike1[[ i ]])),
-        v.names="pop", direction="long"), a_pop = rep(pops, each=nrow(lst_loglike1[[ i ]])) )
+   lst_loglike[[ i ]] <- cbind( reshape(lst_loglike[[ i ]], idvar="year", varying=list(2:ncol(lst_loglike[[ i ]])),
+        v.names=type_of_column, direction="long"), a_pop = rep(pops, each=nrow(lst_loglike[[ i ]])) )
   }
-
   # reshape...
   res <- NULL
   for(pop in pops){  # for each (explicit) pop
-     mat.sim1 <- matrix(unlist(lapply(lst_loglike1[ namesimu ], function(x){
-                       res <- try(x[x$a_pop==pop, 'pop'], silent=TRUE); if(class(res)=="try-error") res <- rep(NA, ncol(lst_loglike1[[refsimu]])); res
-                       })), nrow=nrow(lst_loglike1[[refsimu]][lst_loglike1[[refsimu]]$a_pop==pop,]) , byrow=FALSE)
-     colnames(mat.sim1) <- c(paste('pop',"_", namesimu , sep=''))
+     mat.sim1 <- matrix(unlist(lapply(lst_loglike[ namesimu ], function(x){
+                       res <- try(x[x$a_pop==pop, type_of_column], silent=TRUE); if(class(res)=="try-error") res <- rep(NA, ncol(lst_loglike[[refsimu]])); res
+                       })), nrow=nrow(lst_loglike[[refsimu]][lst_loglike[[refsimu]]$a_pop==pop,]) , byrow=FALSE)
+     colnames(mat.sim1) <- c(paste(type_of_column,"_", namesimu , sep=''))
 
 
 
      mat.sim1 <- replace(mat.sim1, is.na(mat.sim1), 0)
 
-     mat.sim1 <- cbind.data.frame(lst_loglike1[[refsimu]] [ lst_loglike1[[1]]$a_pop==pop, c("year","a_pop") ], mat.sim1)
+     mat.sim1 <- cbind.data.frame(lst_loglike[[refsimu]] [ lst_loglike[[1]]$a_pop==pop, c("year","a_pop") ], mat.sim1)
 
      if(!is.null(res)) res <- rbind.data.frame(res, mat.sim1) else res <- mat.sim1
 
@@ -172,12 +170,12 @@ reshape_per_pop_for_one_sce <- function(lst_loglike1=lst_loglike,
 
 ### 1- calls for reshaping the lst_popdyn1----------------
 count <- 0
-for (sce in general$namefolderoutput){
+for (sce in selected_scenarios){
        count <- count+1
 
         lst_loglike <- get(paste("lst_loglike_agg_weight", selected, sce, sep=''), env=.GlobalEnv)
 
-
+       print(sce)
        # aggregate landings weight PER YEAR
        for (i in 1:length(lst_loglike)){
 
@@ -186,12 +184,12 @@ for (sce in general$namefolderoutput){
          if(selected=="_met_") loglike <- loglike[loglike$metier==met,]
          loglike$year  <- unlist(lapply(strsplit(as.character(loglike$year.month), split="\\."), function(x) x[1]))
          nm            <- colnames(loglike)
-         idx.col       <- grep('pop.', nm) # 40: DEBUG
+         idx.col       <- grep(paste0(type_of_column,'.'), nm) # 40: DEBUG
          DT            <- data.table(loglike)
          eq1           <- c.listquote( paste ("sum(",nm[idx.col],",na.rm=TRUE)",sep="") )
          loglike.agg   <- DT[,eval(eq1),by=list(year)]
          loglike.agg   <- data.frame( loglike.agg)
-         colnames(loglike.agg) <- c("year", paste('pop.', 0:(general$nbpops-1), sep=''))
+         colnames(loglike.agg) <- c("year", paste(paste0(type_of_column,'.'), 0:(general$nbpops-1), sep=''))
          loglike.agg   <- loglike.agg[order(loglike.agg$year),] # order
          lst_loglike[[i]] <- loglike.agg # output
        }
@@ -202,7 +200,9 @@ for (sce in general$namefolderoutput){
        loglike_reshaped <- reshape_per_pop_for_one_sce(
                                    lst_loglike1=lst_loglike,
                                    namesimu=general$namesimu[[sce]],
-                                   selected_pops=selected_pops)
+                                   selected_pops=selected_pops,
+                                   type_of_column=type_of_column,
+                                   nby=nby)
        assign(paste("loglike_", sce, sep=''), loglike_reshaped)
        }
 
@@ -231,16 +231,16 @@ for (sce in general$namefolderoutput){
 
    if(count==1)  all_sces_first_y <- cbind.data.frame(a_pop=as.character(loglike_first_tstep[,"a_pop"]))
    all_sces_first_y <- cbind.data.frame(all_sces_first_y, loglike_first_tstep[,"mean"])
-   colnames(all_sces_first_y)[ncol(all_sces_first_y)] <- sce
+   colnames(all_sces_first_y)[ncol(all_sces_first_y)] <- scenarios_names[count]
 
    if(count==1)  all_sces_last_y <- cbind.data.frame(a_pop=as.character(loglike_last_tstep[,"a_pop"]))
    all_sces_last_y <- cbind.data.frame(all_sces_last_y, loglike_last_tstep[,"mean"])
-   colnames(all_sces_last_y)[ncol(all_sces_last_y)] <- sce
+   colnames(all_sces_last_y)[ncol(all_sces_last_y)] <- scenarios_names[count]
   } # end sce
 
 
 
-
+  
 
     if(black_and_white){
       # split into two groups...
@@ -262,20 +262,20 @@ for (sce in general$namefolderoutput){
 
       # reorder stocks
       all_sces_first_y$a_pop <- factor(all_sces_first_y$a_pop)
-      species_order <- c(
-                       grep("nsea",all_sces_first_y$a_pop),
-                       grep("kask",  all_sces_first_y$a_pop ),
-                        grep("kat", all_sces_first_y$a_pop),
-                         grep("3a22", all_sces_first_y$a_pop ),
-                         grep("3a2223", all_sces_first_y$a_pop ),
-                         grep("2224", all_sces_first_y$a_pop),
-                          grep("2532",  all_sces_first_y$a_pop ),
-                           grep("2232", all_sces_first_y$a_pop )
-                           )
-      species_order <- unique(species_order)
+      #species_order <- c(
+      #                 grep("nsea", all_sces_first_y$a_pop),
+      #                 grep("kask",  all_sces_first_y$a_pop ),
+      #                  grep("kat", all_sces_first_y$a_pop),
+      #                   grep("3a22", all_sces_first_y$a_pop ),
+      #                   grep("3a2223", all_sces_first_y$a_pop ),
+      #                   grep("2224", all_sces_first_y$a_pop),
+      #                    grep("2532",  all_sces_first_y$a_pop ),
+      #                     grep("2232", all_sces_first_y$a_pop )
+      #                     )
+      #species_order <- unique(species_order)
 
-      all_sces_first_y <- all_sces_first_y[rev(species_order),]
-      all_sces_last_y <- all_sces_last_y[rev(species_order),]
+      #all_sces_first_y <- all_sces_first_y[rev(species_order),]
+      #all_sces_last_y <- all_sces_last_y[rev(species_order),]
     }
 
 
@@ -286,7 +286,8 @@ for (sce in general$namefolderoutput){
 
    ##-------A PLOT-----------
     graphics.off()
-   namefileplot <- paste("landings_per_stock_per_scenario", selected, sep='')
+   if(type_of_column=="pop") namefileplot <- paste("landings_per_stock_per_scenario", selected, sep='')
+   if(type_of_column=="disc") namefileplot <- paste("discards_per_stock_per_scenario", selected, sep='')
 
     tiff(file=file.path(general$main.path, general$namefolderinput, paste(namefileplot, ".tiff", sep="")),
                                   width = a_width, height = a_height,   compression="lzw",
@@ -307,7 +308,8 @@ for (sce in general$namefolderoutput){
    title ("First year", adj=0)
 
    mtext("Scenario", 1, line=0, cex=1.5, outer=TRUE)
-   mtext(side=2, "Annual landings [*000 tons]", line=0, cex=1., outer=TRUE)
+   if(type_of_column=="pop") mtext(side=2, "Annual landings [*000 tons]", line=0, cex=1., outer=TRUE)
+   if(type_of_column=="disc") mtext(side=2, "Annual discards [*000 tons]", line=0, cex=1., outer=TRUE)
 
     mp_last_y <-  barplot(as.matrix(all_sces_last_y[,-1])/1e6, las=2, , ylim=ylims, xlab="", ylab="",
                          col =some_colors , density=the_density,  legend=FALSE, axes = FALSE,axisnames = FALSE,
@@ -317,14 +319,13 @@ for (sce in general$namefolderoutput){
    title ("Last year", adj=0)
 
    mtext("Scenario", 1, line=0, cex=1.5, outer=TRUE)
-   mtext(side=2,"Annual landings [*000 tons]",line=0, cex=1., outer=TRUE)
+   if(type_of_column=="pop") mtext(side=2,"Annual landings [*000 tons]",line=0, cex=1., outer=TRUE)
+   if(type_of_column=="disc") mtext(side=2,"Annual discards [*000 tons]",line=0, cex=1., outer=TRUE)
 
    dev.off()
 
 
 return()
 }
-
-
 
 
