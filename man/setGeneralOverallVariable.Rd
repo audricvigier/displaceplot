@@ -6,15 +6,14 @@
 \usage{
 setGeneralOverallVariable(pathToRawInputs = file.path("C:", "Users",
   "fbas", "Documents", "GitHub", paste0("DISPLACE_input_gis_",
-  general$case_study)), pathToDisplaceInputs = file.path("C:", "Users",
-  "fbas", "Documents", "GitHub", paste0("DISPLACE_input_",
-  general$case_study)), pathToOutputs = file.path("C:",
-  "DISPLACE_outputs"), caseStudy = "DanishFleet", iGraph = 41,
-  iYear = "2015", iCountry = "DEN", nbPops = 39, nbSzgroup = 14,
-  nameFolderInput = "DanishFleet", theScenarios = c("svana_baseline",
-  "svana_sub1mx20", "svana_sub4mx20", "svana_sub4mx5ns20bt",
-  "svana_sub4mx20ns5bt", "svana_sub4mx5ns5bt"), nbSimus = 20,
-  useSQLite = FALSE)
+  "DanishFleet")), pathToDisplaceInputs = file.path("C:", "Users",
+  "fbas", "Documents", "GitHub", paste0("DISPLACE_input_", "DanishFleet")),
+  pathToOutputs = file.path("C:", "DISPLACE_outputs"),
+  caseStudy = "DanishFleet", iGraph = 41, iYear = "2015",
+  iCountry = "DEN", nbPops = 39, nbSzgroup = 14,
+  theScenarios = c("svana_baseline", "svana_sub1mx20", "svana_sub4mx20",
+  "svana_sub4mx5ns20bt", "svana_sub4mx20ns5bt", "svana_sub4mx5ns5bt"),
+  nbSimus = 20, useSQLite = FALSE)
 }
 \arguments{
 \item{fname}{First name}

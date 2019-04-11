@@ -30,9 +30,9 @@ This function generates maps from an average layer as a second step after call t
 \dontrun{
 general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", "fbas", 
                                                 "Documents", "GitHub", paste0("DISPLACE_input_gis_", 
-                                                 general$case_study)),
+                                                 "DanishFleet")),
                                       pathToDisplaceInputs = file.path("C:", "Users", "fbas", 
-                                                "Documents", "GitHub", paste0("DISPLACE_input_", general$case_study)),
+                                                "Documents", "GitHub", paste0("DISPLACE_input_", "DanishFleet")),
                                       pathToOutputs =file.path("C:","DISPLACE_outputs"),
                                       caseStudy="DanishFleet",
                                       iGraph=41,
@@ -40,7 +40,6 @@ general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", 
                                       iCountry="DEN",
                                       nbPops=39,
                                       nbSzgroup=14,
-                                      nameFolderInput="DanishFleet",
                                       theScenarios= c("svana_baseline",
                                                       "svana_sub1mx20",
                                                       "svana_sub4mx20",
@@ -50,7 +49,6 @@ general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", 
                                       nbSimus=20,
                                       useSQLite=FALSE    
                                       )
-
 
 
 
