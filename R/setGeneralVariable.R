@@ -11,23 +11,17 @@
 
 
 
-setGeneralOverallVariable <- function(pathToRawInputs =file.path("C:", "Users", "fbas", 
-                                                 "Documents", "GitHub", paste0("DISPLACE_input_gis_", "DanishFleet")),
-                                       pathToDisplaceInputs = file.path("C:", "Users", "fbas", 
-                                                 "Documents", "GitHub", paste0("DISPLACE_input_", "DanishFleet")),
-                                       pathToOutputs =file.path("C:","DISPLACE_outputs"),
-                                       caseStudy="DanishFleet",
-                                       iGraph=41,
-                                       iYear="2015",
-                                       iCountry="DEN",
-                                       nbPops=39,
+setGeneralOverallVariable <- function( pathToRawInputs =file.path("D:/work/Displace/", paste0("DISPLACE_input_gis_","CelticSea")),
+                                       pathToDisplaceInputs = file.path("D:/work/Displace/", paste0("DISPLACE_input_","CelticSea")),
+                                       pathToOutputs =file.path("D:","DISPLACE_outputs"),
+                                       caseStudy="CelticSea",
+                                       iGraph=3,
+                                       iYear="2010",
+                                       iYearEnd="2020",
+                                       iCountry=NULL,
+                                       nbPops=27,
                                        nbSzgroup=14,
-                                       theScenarios= c("svana_baseline",
-                                                       "svana_sub1mx20",
-                                                       "svana_sub4mx20",
-                                                       "svana_sub4mx5ns20bt",
-                                                       "svana_sub4mx20ns5bt",
-                                                       "svana_sub4mx5ns5bt" ),
+                                       theScenarios= c("calib_multipliers_","calib_multipliers_SCE_"),
                                        nbSimus=20,
                                        useSQLite=FALSE    
                                        ){
@@ -44,22 +38,16 @@ setGeneralOverallVariable <- function(pathToRawInputs =file.path("C:", "Users", 
 
     general$igraph            <- iGraph
     general$a.year            <- iYear
+    general$a.yearEnd         <- iYearEnd
     general$a.country         <- iCountry
     general$nbpops            <- nbPops  
     general$nbszgroup         <- nbSzgroup
     general$namefolderinput   <- caseStudy
   
     general$namefolderoutput   <- theScenarios
-    general$namesimu           <- list(
-                                 svana_baseline=   paste("simu", c(1:nbSimus), sep=''),
-                                 svana_sub1mx20=   paste("simu", c(1:nbSimus), sep=''),
-                                 svana_sub4mx20=   paste("simu", c(1:nbSimus), sep=''),
-                                 svana_sub4mx5ns20bt=   paste("simu", c(1:nbSimus), sep=''),
-                                 svana_sub4mx20ns5bt=   paste("simu", c(1:nbSimus), sep=''),
-                                 svana_sub4mx5ns5bt=   paste("simu", c(1:nbSimus), sep='')  
-                                                                    
-                                 ) 
-
+    general$namesimu           <- list()
+    for (i in 1:length(theScenarios)){general$namesimu[[i]] = paste(theScenarios[i], c(1:nbSimus), sep='')}
+    attr(general$namesimu,"names")=theScenarios
  
     general$use_sqlite <- useSQLite
 

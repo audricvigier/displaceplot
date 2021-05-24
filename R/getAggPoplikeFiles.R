@@ -1,18 +1,19 @@
 
-#' Processing the popdyn.dat files  
+#' Processing the popdyn.dat files
 #'
-#' This function process the popdyn_simu_xxx.dat files storing Ns at pop 
+#' This function process the popdyn_simu_xxx.dat files storing Ns at pop
 #'
-#' @param fname First name
-#' @param lname Last name
+#' @param the_baseline Name of the reference scenario. Some derived indicators will be relative to this scenario.
+#' @param explicit_pops Numeric vector, indicating will populations were explicit in the simulation.
+#' @param general A list with the following slots:  namefolderinput, the repertory where the DISPLACE outputs are stored after a run, usually the name of the study case; namefolderoutput, where numerous outputs have to be produced (I guess?), but also where some inputs are. Not clear; namesimu, a list of simulation names, same length as general$namefolderoutput; main.path A path that can also be used to indicate where the DISPLACE outputs files are stored after a simulation. the path used by these function is the concatenation of main.path and namefolderinputs; main.path.param Where the DISPLACE input files are stored; pathToRawInputs Where pre-processed files to create DISPLACE input files are stored; nbszgroup, the number of population size bins
 #' @export
 #' @examples
-#' 
+#'
 #' \dontrun{
-#' general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", "fbas", 
-#'                                                 "Documents", "GitHub", paste0("DISPLACE_input_gis_", 
+#' general <- setGeneralOverallVariable (pathToRawInputs =file.path("C:", "Users", "fbas",
+#'                                                 "Documents", "GitHub", paste0("DISPLACE_input_gis_",
 #'                                                  "DanishFleet")),
-#'                                       pathToDisplaceInputs = file.path("C:", "Users", "fbas", 
+#'                                       pathToDisplaceInputs = file.path("C:", "Users", "fbas",
 #'                                                 "Documents", "GitHub", paste0("DISPLACE_input_", "DanishFleet")),
 #'                                       pathToOutputs =file.path("C:","DISPLACE_outputs"),
 #'                                       caseStudy="DanishFleet",
@@ -28,34 +29,34 @@
 #'                                                       "svana_sub4mx20ns5bt",
 #'                                                       "svana_sub4mx5ns5bt" ),
 #'                                       nbSimus=20,
-#'                                       useSQLite=FALSE    
+#'                                       useSQLite=FALSE
 #'                                       )
 #'
 #'
 #'
 #'
-#' 
+#'
 #'
 #'   getAggPoplikeFiles(general=general,
 #'                      explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
 #'                      the_baseline ="svana_baseline"
-#'                      )  
+#'                      )
 #'
 #'   }
 
 
 
-  
+
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!LOGLIKE.DAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!##
- getAggPoplikeFiles <- function(general=general, 
+ getAggPoplikeFiles <- function(general=general,
                                 explicit_pops=c(0, 1, 2, 3, 11, 23, 24, 26, 30, 31, 32),
                                 the_baseline ="svana_baseline"
                                               ){
- 
+
 
    c.listquote <- function (...)
    {
@@ -82,13 +83,13 @@
 
 
 
-                                                                 
-  
+
+
   ## GENERATE THE LST_POPDYN OBJETS...
   lst_popdyn <- list()
   for (sce in general$namefolderoutput){
     for (sim in general$namesimu[[sce]]){
-   
+
 
   ## read the 'popdyn' output (N in thousand individuals here)
   er <- try(read.table(file=file.path(general$main.path, general$namefolderinput, sce,
@@ -98,10 +99,10 @@
     colnames (lst_popdyn[[sim]]) <- c('tstep', 'pop', paste('N_at_szgroup.',0:(general$nbszgroup-1), sep=''))
     }
 
- 
+
     } # end for sim
     assign(paste("lst_popdyn_", sce, sep=''), lst_popdyn)
-  
+
    # save for later use....
    save(list=c(paste("lst_popdyn_", sce, sep='')),
           file=file.path(general$main.path, general$namefolderinput,
@@ -117,7 +118,7 @@
      load(file=file.path(general$main.path, general$namefolderinput,
                  sce, paste("lst_popdyn_",sce,".RData", sep='')), envir = .GlobalEnv)
     }
-               
+
   }
 
 
@@ -333,9 +334,9 @@
        lst_popdyn1 <- lst_popdyn1[namesimu1]
 
 
-       MAT  <- read.table(file=file.path(general$main.path.param, paste("popsspe_",general$namefolderinput,sep=''), 
+       MAT  <- read.table(file=file.path(general$main.path.param, paste("popsspe_",general$namefolderinput,sep=''),
                              paste("init_maturity_per_szgroup_biolsce1.dat",sep='')), sep="", dec=".", header=TRUE)
-       W    <- read.table(file=file.path(general$main.path.param, paste("popsspe_",general$namefolderinput,sep=''), 
+       W    <- read.table(file=file.path(general$main.path.param, paste("popsspe_",general$namefolderinput,sep=''),
                             paste("init_weight_per_szgroup_biolsce1.dat",sep='')), sep="", dec=".", header=TRUE)
        MAT  <- MAT[MAT$stock %in% explicit_pops,]
        W    <- W[W$stock %in% explicit_pops,]
@@ -360,7 +361,7 @@
            lapply(lst_popdyn1, function(x, MATS, WS) {
                cbind(
                  x[,c(1:2)],
-                     x[,-c(1:2)]*MATS[,-c(1)]*WS[,-c(1)]*1000  /1e6  #=> SSB per stock in thousands tons   
+                     x[,-c(1:2)]*MATS[,-c(1)]*WS[,-c(1)]*1000  /1e6  #=> SSB per stock in thousands tons
                     )
                     }, MATS, WS)
 
@@ -373,9 +374,9 @@
        # for the obs ssb
        N     <- read.table(file=file.path(general$main.path.param,  paste("popsspe_",general$namefolderinput,sep=''),
                              paste("init_pops_per_szgroup_biolsce1.dat",sep='')), sep="", dec=".", header=TRUE)
-       MAT   <- read.table(file=file.path(general$main.path.param,  paste("popsspe_",general$namefolderinput,sep=''), 
+       MAT   <- read.table(file=file.path(general$main.path.param,  paste("popsspe_",general$namefolderinput,sep=''),
                              paste("init_maturity_per_szgroup_biolsce1.dat",sep='')), sep="", dec=".", header=TRUE)
-       W     <- read.table(file=file.path(general$main.path.param,  paste("popsspe_",general$namefolderinput,sep=''), 
+       W     <- read.table(file=file.path(general$main.path.param,  paste("popsspe_",general$namefolderinput,sep=''),
                              paste("init_weight_per_szgroup_biolsce1.dat",sep='')), sep="", dec=".", header=TRUE)
        mat   <- cbind(N, MAT, W)
        mat [,"ssb"] <- mat[,'init_maturity_per_szgroup']*mat[,'init_weight_per_szgroup']*mat[,'init_pops_per_szgroup']*1000
@@ -426,9 +427,9 @@
                   mat.sim1 <- replace(mat.sim1, is.na(mat.sim1), 0)
 
                   # sim
-                  the_sim_upper <- apply(mat.sim1[1:12,], 1, quantile, 0.95) # keep only the first year 
-                  the_sim_median <- apply(mat.sim1[1:12,], 1, quantile, 0.5) # keep only the first year 
-                  the_sim_lower <- apply(mat.sim1[1:12,], 1, quantile, 0.05) # keep only the first year 
+                  the_sim_upper <- apply(mat.sim1[1:12,], 1, quantile, 0.95) # keep only the first year
+                  the_sim_median <- apply(mat.sim1[1:12,], 1, quantile, 0.5) # keep only the first year
+                  the_sim_lower <- apply(mat.sim1[1:12,], 1, quantile, 0.05) # keep only the first year
                   #=> the_sim_median[11] is the SSB at the end of the year....
 
                   # obs
@@ -554,7 +555,6 @@
 
  return()
  }
-  
-  
-   
-   
+
+
+
