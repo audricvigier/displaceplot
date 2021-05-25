@@ -49,16 +49,10 @@ getAggNodeLayerFiles <- function(general, a_type="cumcatches", a_tstep="34321"){
 
 
   for (sce in general$namefolderoutput){
-
-
-
- 
-
- 
+    
     ## catches-------------------------------
     alllayers <- NULL
-
-
+    
      for (sim in general$namesimu[[sce]]){
 
          er <- try(   {
@@ -88,8 +82,6 @@ getAggNodeLayerFiles <- function(general, a_type="cumcatches", a_tstep="34321"){
      # hereafter:
      alllayers <- rbind(alllayers, data.frame(idx_node=0, lat=coord[,2], long=coord[,1], a_type=NA, simu="simu2")) 
      colnames(alllayers) [colnames(alllayers)%in%  "a_type"] <- a_type
-     
-  
 
     alllayersav <- tapply(as.numeric(as.character(alllayers[,a_type])), list(paste(alllayers$idx_node, alllayers$lat, alllayers$long))
                                                               , mean, na.rm=TRUE) # average over simus
@@ -97,13 +89,10 @@ getAggNodeLayerFiles <- function(general, a_type="cumcatches", a_tstep="34321"){
 
     write.table(alllayersav, file=file.path(general$main.path, general$namefolderinput, sce,
                               paste("average_",a_type,"_layer.txt", sep='')), row.names=FALSE, quote=FALSE)
-
-   
- 
+    
     }
 
-
-return()
+  return()
 }
 
 
