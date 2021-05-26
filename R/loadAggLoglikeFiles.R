@@ -34,21 +34,17 @@
 #' loadLoglikeFiles(general=general, use_port_info=FALSE)
 #' }
 
-loadLoglikeFiles <- function (general=general, use_port_info=FALSE){
+loadLoglikeFiles <- function (general=general, use_port_info=FALSE,what="weight"){
 
  # reload scenarios for what="weight"
  for (sce in general$namefolderoutput){
   if(sce %in% general$namefolderoutput) {
      load(file=file.path(general$main.path, general$namefolderinput,
-                 sce, paste("lst_loglike_weight_agg_",sce,".RData", sep='')), envir = .GlobalEnv)
-     if(!use_port_info) rm( list=paste("lst_loglike_agg_weight_vid_port_",sce, sep=''), envir = .GlobalEnv) ; gc(TRUE)  # remove bc too memory demanding
-    }
-               
+                 "data", paste("lst_loglike_",what,"_agg_",sce,".RData", sep='')), envir = .GlobalEnv)
+     if(!use_port_info) rm( list=paste("lst_loglike_agg_",what,"_vid_port_",sce, sep=''), envir = .GlobalEnv) ; gc(TRUE)  # remove bc too memory demanding
+    }         
   }
-
-
-
-return()
+  return()
 }
 
 

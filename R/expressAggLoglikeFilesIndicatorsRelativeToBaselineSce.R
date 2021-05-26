@@ -56,7 +56,7 @@
 #'
 #'   }
 
-
+#DEPRECATED
 
 expressAggLoglikeFilesIndicatorsRelativeToBaselineSce <- function(general,
                               the_baseline = "svana_baseline",

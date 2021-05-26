@@ -49,13 +49,6 @@
 
 #---------------
 #---------------
-plot_popdyn (lst_popdyn1=lst_popdyn,
-             sce=sce,
-             namesimu=list(names(lst_popdyn)),
-             explicit_pops= explicit_pops,
-             sum_all=FALSE,
-             combined_name= combined_name,
-             general=general)
 
 # Deprectaed way to represent N per size class pop and month!!!!
 plot_popdyn <- function(lst_popdyn1=lst_popdyn, ..., namesimu=list(),
@@ -234,7 +227,7 @@ plot_popdyn <- function(lst_popdyn1=lst_popdyn, ..., namesimu=list(),
     write.table(cbind.data.frame(time=format(Sys.time(), "%H:%M:%S"), combined_name, pop,
                                  simu=gsub("totN_","", rownames(cc)), cc),
                 file=file.path(general$main.path, general$namefolderinput,
-                               paste("pop_indicators_gain_in_numbers_",the_baseline,"_per_simu.txt", sep='')),
+                               paste("data/pop_indicators_gain_in_numbers_",the_baseline,"_per_simu.txt", sep='')),
                 append = TRUE, sep = " ", col.names = FALSE, row.names=FALSE, quote=FALSE)
   }
   
@@ -429,7 +422,7 @@ getAggPoplikeFiles <- function(general=general,
     # save for later use....
     save(list=c(paste("lst_popdyn_", sce, sep='')),
          file=file.path(general$main.path, general$namefolderinput,
-                        sce, paste("lst_popdyn_", sce,".RData", sep='') )  )
+                        "data", paste("lst_popdyn_", sce,".RData", sep='') )  )
     
   } # end for sce
   
@@ -450,7 +443,7 @@ getAggPoplikeFiles <- function(general=general,
   # to export the gains
   write(c("id","sce","pop", "simu", paste("gain_totN", explicit_pops, sep="")), ncol=4+length(explicit_pops),  ## CAUTION NCOL HERE ##
         file=file.path(general$main.path, general$namefolderinput,
-                       paste("pop_indicators_gain_in_numbers_baseline_per_simu.txt", sep='')),
+                       paste("data/pop_indicators_gain_in_numbers_baseline_per_simu.txt", sep='')),
         append = FALSE, sep = " ") # init
   
   

@@ -66,7 +66,7 @@
 #'                  # => do the plot
 #'   }
 
-
+#DEPRECATED
 
 
 boxplotAggLoglikeFilesIndicators <- function(general= general,

@@ -709,7 +709,7 @@ aggregateLoglike <- function(loglike, agg_by=c("year.month"), what="weight",expl
        if(general$case_study=="CelticSea") {paste("lst_loglike_agg_",what,"_met_", sce, sep='')}),
          
           file=file.path(general$main.path, general$namefolderinput,
-                 sce, paste("lst_loglike_",what,"_agg_", sce,".RData", sep='') )  )
+                 "data", paste("lst_loglike_",what,"_agg_", sce,".RData", sep='') )  )
 
  
 
