@@ -429,8 +429,7 @@ getAggPoplikeFiles <- function(general=general,
   # reload scenarios for what="weight"
   for (sce in general$namefolderoutput){
     if(sce %in% general$namefolderoutput) {
-      load(file=file.path(general$main.path, general$namefolderinput,
-                          sce, paste("lst_popdyn_",sce,".RData", sep='')), envir = .GlobalEnv)
+      load(file=file.path(general$main.path, general$namefolderinput, paste("/data/lst_popdyn_",sce,".RData", sep='')), envir = .GlobalEnv)
     }
     
   }
